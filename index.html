@@ -3,206 +3,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="游渭南 — 发现渭南之美，上传你的精彩瞬间">
+<meta name="description" content="游渭南 — 发现渭南之美">
 <title>游渭南 · 发现渭南之美</title>
 <style>
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-  :root{--bg:#f7f8fc;--card:#ffffff;--primary:#e8734a;--primary-dark:#d15a2e;--accent:#3b8c6e;--text:#2d2d3a;--muted:#8a8a9a;--border:#e8e8f0;--shadow:0 2px 16px rgba(0,0,0,.06)}
-  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f8fc;color:#2d2d3a;-webkit-font-smoothing:antialiased}
+  .page{width:100%;max-width:760px;margin:0 auto;background:#fff}
+  .page img{display:block;width:100%;height:auto}
 
-  /* Hero */
-  .hero{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;background:linear-gradient(180deg,#2c1810 0%,#5a3420 40%,#e8734a 70%,#f7f8fc 100%);overflow:hidden}
-  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.06) 0%,transparent 50%),radial-gradient(ellipse at 70% 60%,rgba(255,255,255,.04) 0%,transparent 50%)}
-  .hero-mountain{position:absolute;bottom:0;left:0;right:0;height:45%;clip-path:polygon(0% 100%,0% 40%,15% 55%,30% 30%,45% 50%,60% 25%,75% 45%,90% 35%,100% 55%,100% 100%)}
-  .hero-content{position:relative;z-index:2}
-  .hero-tag{display:inline-block;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:6px 20px;border-radius:20px;margin-bottom:24px;letter-spacing:4px}
-  .hero h1{font-size:48px;font-weight:800;color:#fff;letter-spacing:8px;margin-bottom:12px;line-height:1.2;text-shadow:0 2px 20px rgba(0,0,0,.2)}
-  .hero-sub{font-size:16px;color:rgba(255,255,255,.7);letter-spacing:4px;margin-bottom:40px}
-  .hero-scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;animation:bounce 2s infinite}
-  .hero-scroll span{display:block;width:24px;height:24px;border-right:2px solid rgba(255,255,255,.4);border-bottom:2px solid rgba(255,255,255,.4);transform:rotate(45deg)}
-  @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
-
-  /* Section */
-  .section{padding:60px 24px;max-width:480px;margin:0 auto}
-  .section-title{font-size:26px;font-weight:700;text-align:center;margin-bottom:8px;letter-spacing:2px}
-  .section-sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:36px;letter-spacing:1px}
-
-  /* Intro */
-  .intro-card{background:var(--card);border-radius:20px;padding:28px 24px;box-shadow:var(--shadow);margin-bottom:16px}
-  .intro-card p{font-size:15px;line-height:1.8;color:var(--muted);text-align:center}
-  .intro-card .highlight{color:var(--primary);font-weight:600}
-
-  /* Highlights */
-  .highlights{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:40px}
-  .hl-card{background:var(--card);border-radius:16px;padding:20px 16px;text-align:center;box-shadow:var(--shadow)}
-  .hl-icon{font-size:32px;margin-bottom:8px}
-  .hl-title{font-size:14px;font-weight:600;margin-bottom:4px}
-  .hl-desc{font-size:12px;color:var(--muted)}
-
-  /* Form */
-  .form-card{background:var(--card);border-radius:20px;padding:32px 24px;box-shadow:var(--shadow)}
-  .form-group{margin-bottom:18px;text-align:left}
+  /* 表单区 */
+  .form-area{background:#f7f8fc;padding:40px 24px 60px;max-width:760px;margin:0 auto}
+  .form-card{background:#fff;border-radius:20px;padding:32px 24px;box-shadow:0 2px 16px rgba(0,0,0,.06)}
+  .form-card h2{font-size:22px;font-weight:700;text-align:center;margin-bottom:8px;color:#2d2d3a}
+  .form-card .sub{font-size:14px;color:#8a8a9a;text-align:center;margin-bottom:28px}
+  .form-group{margin-bottom:16px}
   .form-group label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
-  .form-group label .req{color:var(--primary)}
-  .form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;font-size:15px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .2s}
-  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--primary)}
-  .form-group textarea{min-height:80px;resize:vertical}
+  .form-group label .req{color:#e8734a}
+  .form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;font-size:15px;border:1px solid #e8e8f0;border-radius:12px;background:#f7f8fc;color:#2d2d3a;font-family:inherit;outline:none}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#e8734a}
 
-  /* File Upload */
-  .file-zone{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px;border:2px dashed var(--border);border-radius:16px;background:var(--bg);cursor:pointer;transition:all .2s}
-  .file-zone:hover{border-color:var(--primary);background:rgba(232,115,74,.03)}
-  .file-zone input[type=file]{display:none}
+  .file-zone{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px;border:2px dashed #e8e8f0;border-radius:16px;background:#f7f8fc;cursor:pointer}
+  .file-zone:hover{border-color:#e8734a;background:rgba(232,115,74,.03)}
   .file-list{width:100%;margin-top:8px}
-  .file-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:8px;margin-top:6px;font-size:13px}
+  .file-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f7f8fc;border-radius:8px;margin-top:4px;font-size:13px}
   .file-item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .file-item .remove{cursor:pointer;color:var(--primary);font-size:16px;padding:0 4px}
+  .file-item .remove{cursor:pointer;color:#e8734a;font-size:16px}
 
-  /* Buttons */
-  .btn{display:block;width:100%;padding:15px;font-size:16px;font-weight:600;border:none;border-radius:14px;cursor:pointer;letter-spacing:1px;transition:all .3s;text-align:center;font-family:inherit}
-  .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 6px 24px rgba(232,115,74,.3)}
-  .btn-primary:hover,.btn-primary:active{transform:translateY(-2px);box-shadow:0 10px 32px rgba(232,115,74,.4)}
-  .btn-primary:disabled{opacity:.6;transform:none;cursor:not-allowed}
-  .btn-success{background:linear-gradient(135deg,var(--accent),#2d6b53);color:#fff}
+  .btn{display:block;width:100%;padding:15px;font-size:16px;font-weight:600;border:none;border-radius:14px;cursor:pointer;letter-spacing:1px;font-family:inherit}
+  .btn-primary{background:linear-gradient(135deg,#e8734a,#d15a2e);color:#fff;box-shadow:0 6px 24px rgba(232,115,74,.3)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-primary:disabled{opacity:.6;transform:none}
 
-  /* Success */
-  .success-panel{display:none;text-align:center;padding:40px 20px}
-  .success-panel.show{display:block}
-  .success-panel .icon{font-size:64px;margin-bottom:16px}
-  .success-panel h3{font-size:22px;font-weight:700;margin-bottom:8px;color:var(--accent)}
-  .success-panel p{color:var(--muted);font-size:14px;line-height:1.6}
+  .success-msg{display:none;text-align:center;padding:40px 20px}
+  .success-msg.show{display:block}
+  .success-msg .icon{font-size:64px;margin-bottom:12px}
+  .success-msg h3{font-size:20px;color:#3b8c6e;margin-bottom:8px}
 
-  /* Footer */
-  .footer{text-align:center;padding:32px 24px;font-size:12px;color:var(--muted);line-height:1.8}
-
-  /* Anim */
-  @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-  .fade-up{animation:fadeUp .8s ease-out both}.fade-up:nth-child(2){animation-delay:.15s}.fade-up:nth-child(3){animation-delay:.3s}
-
-  /* Loading */
-  .spinner{display:none;width:24px;height:24px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px}
-  .spinner.show{display:inline-block}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  .footer{text-align:center;padding:24px;font-size:12px;color:#8a8a9a}
 </style>
 </head>
 <body>
 
-<!-- Hero -->
-<section class="hero"><div class="hero-mountain"></div><div class="hero-content"><div class="hero-tag">陕 西 · 渭 南</div><h1>游 渭 南</h1><p class="hero-sub">发现山水渭南 · 记录旅途精彩</p></div><div class="hero-scroll"><span></span></div></section>
+<!-- 设计稿长图 -->
+<div class="page">
+  <img src="img_01.png" alt="">
+  <img src="img_02.png" alt="">
+  <img src="img_03.png" alt="">
+</div>
 
-<!-- Intro -->
-<section class="section fade-up"><div class="intro-card"><p>渭南，<span class="highlight">华山巍峨</span>耸立，<span class="highlight">黄河奔流</span>不息。</p><p>这里有千年古城的历史沉淀，也有秦岭山水的自然壮美。</p><p>用镜头记录你眼中的<span class="highlight">大美渭南</span>，上传作品参与评选，赢取专属旅游福利！</p></div></section>
+<!-- 表单区 -->
+<div class="form-area">
+  <div class="form-card">
+    <h2>📸 上传作品 · 留下联系方式</h2>
+    <p class="sub">参与游渭南活动，赢取专属福利</p>
 
-<!-- Highlights -->
-<section class="section fade-up"><h2 class="section-title">旅途亮点</h2><p class="section-sub">发现渭南的独特魅力</p><div class="highlights"><div class="hl-card"><div class="hl-icon">⛰️</div><div class="hl-title">西岳华山</div><div class="hl-desc">奇险天下第一山</div></div><div class="hl-card"><div class="hl-icon">🏛️</div><div class="hl-title">千年古城</div><div class="hl-desc">韩城古城·党家村</div></div><div class="hl-card"><div class="hl-icon">🌊</div><div class="hl-title">黄河胜景</div><div class="hl-desc">洽川湿地·黄河魂</div></div><div class="hl-card"><div class="hl-icon">🍜</div><div class="hl-title">渭南味道</div><div class="hl-desc">时辰包子·水盆羊肉</div></div></div></section>
-
-<!-- Form -->
-<section class="section fade-up" id="formSection"><h2 class="section-title">上传作品 · 参与评选</h2><p class="section-sub">分享你的渭南之旅</p>
-
-<div class="form-card">
-  <!-- ⚠️ 将 action 中的 YOUR_FORM_ID 替换为 Formspree 表单 ID -->
-  <form id="uploadForm" action="https://formspree.io/f/xbgrjrzz" method="POST" enctype="multipart/form-data">
-
-    <div class="form-group"><label>姓名 <span class="req">*</span></label><input type="text" name="name" placeholder="请输入你的姓名" required></div>
-    <div class="form-group"><label>手机号 <span class="req">*</span></label><input type="tel" name="phone" placeholder="请输入手机号码" required maxlength="11"></div>
-    <div class="form-group"><label>微信 / 邮箱</label><input type="text" name="contact" placeholder="方便后续联系"></div>
-    <div class="form-group"><label>作品主题</label><select name="theme"><option value="">请选择作品主题</option><option value="华山风光">华山风光</option><option value="古城人文">古城人文</option><option value="黄河湿地">黄河湿地</option><option value="城市新貌">城市新貌</option><option value="美食特产">美食特产</option><option value="其他">其他</option></select></div>
-
-    <div class="form-group"><label>上传作品 <span class="req">*</span></label>
-      <div class="file-zone" id="fileZone" onclick="document.getElementById('photos').click()">
-        <span style="font-size:36px">📸</span>
-        <span style="font-size:14px;color:var(--muted)">点击选择照片（可多选）</span>
-        <span style="font-size:12px;color:var(--muted)">支持 jpg / png，单张不超过 10MB</span>
+    <form id="uploadForm" action="https://formspree.io/f/xbgrjrzz" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>姓名 <span class="req">*</span></label>
+        <input type="text" name="name" placeholder="请输入你的姓名" required>
       </div>
-      <input type="file" name="photos" id="photos" accept="image/jpeg,image/png" multiple style="display:none" onchange="showFiles(this)">
-      <div class="file-list" id="fileList"></div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px">可多次上传，每次最多 5 张</p>
+      <div class="form-group">
+        <label>手机号 <span class="req">*</span></label>
+        <input type="tel" name="phone" placeholder="请输入手机号码" required maxlength="11">
+      </div>
+      <div class="form-group">
+        <label>微信 / 邮箱</label>
+        <input type="text" name="contact" placeholder="方便后续联系">
+      </div>
+      <div class="form-group">
+        <label>作品主题</label>
+        <select name="theme">
+          <option value="">请选择作品主题</option>
+          <option value="华山风光">华山风光</option>
+          <option value="古城人文">古城人文</option>
+          <option value="黄河湿地">黄河湿地</option>
+          <option value="城市新貌">城市新貌</option>
+          <option value="美食特产">美食特产</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>上传作品 <span class="req">*</span></label>
+        <div class="file-zone" onclick="document.getElementById('photos').click()">
+          <span style="font-size:36px">📷</span>
+          <span style="font-size:14px;color:#8a8a9a">点击选择照片（可多选，最多5张）</span>
+        </div>
+        <input type="file" name="photos" id="photos" accept="image/jpeg,image/png" multiple style="display:none" onchange="showFiles(this)">
+        <div class="file-list" id="fileList"></div>
+      </div>
+      <div class="form-group">
+        <label>作品简介（选填）</label>
+        <textarea name="desc" placeholder="简单介绍你的作品…" rows="3"></textarea>
+      </div>
+      <input type="hidden" name="_subject" value="游渭南 - 新提交">
+      <input type="hidden" name="_gotcha" style="display:none">
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">📤 提交作品</button>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      <div class="icon">🎉</div>
+      <h3>提交成功！</h3>
+      <p style="color:#8a8a9a;font-size:14px;margin-top:8px">感谢参与「游渭南」活动</p>
+      <button class="btn btn-primary" style="margin-top:16px;background:linear-gradient(135deg,#3b8c6e,#2d6b53)" onclick="resetForm()">📸 继续上传</button>
     </div>
-
-    <div class="form-group"><label>作品简介（选填）</label><textarea name="desc" placeholder="简单介绍你的作品…"></textarea></div>
-
-    <!-- 隐藏字段：来源标识 -->
-    <input type="hidden" name="_subject" value="游渭南 - 新作品提交">
-    <input type="hidden" name="_gotcha" style="display:none">
-
-    <button type="submit" class="btn btn-primary" id="submitBtn">📤 提交作品</button>
-  </form>
-
-  <div class="success-panel" id="successPanel">
-    <div class="icon">🎉</div>
-    <h3>提交成功！</h3>
-    <p>你的作品已收到，<br>感谢参与「游渭南」活动</p>
-    <button class="btn btn-success" style="margin-top:20px" onclick="resetForm()">📸 继续上传</button>
   </div>
-</div></section>
 
-<!-- Footer -->
-<footer class="footer">© 2026 游渭南 · 发现渭南之美<br>扫码或访问 h5.socialmedia-fanchi.com 参与活动</footer>
+  <p style="text-align:center;font-size:12px;color:#8a8a9a;margin-top:20px">
+    数据由 Formspree 安全托管 · 查看路径：formspree.io/forms/xbgrjrzz/submissions
+  </p>
+</div>
+
+<!-- 底部 -->
+<footer class="footer">© 2026 游渭南 · 发现渭南之美</footer>
 
 <script>
 let selectedFiles = [];
 
 function showFiles(input) {
-  for (let f of input.files) {
-    if (selectedFiles.length >= 5) { alert('每次最多上传 5 张'); break; }
-    if (f.size > 10*1024*1024) { alert(f.name + ' 超过 10MB 限制'); continue; }
-    selectedFiles.push(f);
+  for(let f of input.files) {
+    if(selectedFiles.length >= 5){alert('每次最多上传5张');break}
+    if(f.size > 10*1024*1024){alert(f.name+' 超过10MB限制');continue}
+    selectedFiles.push(f)
   }
-  renderFiles();
-  input.value = '';
+  renderFiles()
+  input.value = ''
 }
 
 function renderFiles() {
-  const list = document.getElementById('fileList');
-  list.innerHTML = selectedFiles.map((f,i) =>
-    '<div class="file-item"><span>📷</span><span class="name">'+f.name+'</span><span style="font-size:12px;color:var(--muted)">'+(f.size/1024/1024).toFixed(1)+'MB</span><span class="remove" onclick="removeFile('+i+')">✕</span></div>'
-  ).join('');
-  updateFileInput();
+  document.getElementById('fileList').innerHTML = selectedFiles.map((f,i)=>
+    '<div class="file-item"><span>📷</span><span class="name">'+f.name+'</span><span style="font-size:11px;color:#8a8a9a">'+(f.size/1024/1024).toFixed(1)+'MB</span><span class="remove" onclick="removeFile('+i+')">✕</span></div>'
+  ).join('')
+  updateFileInput()
 }
 
-function removeFile(i) { selectedFiles.splice(i,1); renderFiles(); }
+function removeFile(i){selectedFiles.splice(i,1);renderFiles()}
 
-function updateFileInput() {
-  const dt = new DataTransfer();
-  selectedFiles.forEach(f => dt.items.add(f));
-  document.getElementById('photos').files = dt.files;
+function updateFileInput(){
+  const dt = new DataTransfer()
+  selectedFiles.forEach(f => dt.items.add(f))
+  document.getElementById('photos').files = dt.files
 }
 
-document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  if (selectedFiles.length === 0) { alert('请至少上传一张照片'); return; }
+document.getElementById('uploadForm').addEventListener('submit',async function(e){
+  e.preventDefault()
+  if(selectedFiles.length===0){alert('请至少上传一张照片');return}
+  if(!/^1[3-9]\d{9}$/.test(this.phone.value.trim())){alert('请输入正确的手机号码');return}
+  const btn = document.getElementById('submitBtn')
+  btn.disabled = true; btn.textContent = '提交中...'
+  try{
+    const fd = new FormData(this)
+    const r = await fetch(this.action,{method:'POST',body:fd,headers:{Accept:'application/json'}})
+    if(r.ok){this.style.display='none';document.getElementById('successMsg').classList.add('show')}
+    else{alert('提交失败，请重试')}
+  }catch(e){alert('网络错误，请稍后重试')}
+  btn.disabled = false; btn.textContent = '📤 提交作品'
+})
 
-  const phone = this.phone.value.trim();
-  if (!/^1[3-9]\d{9}$/.test(phone)) { alert('请输入正确的手机号码'); return; }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '提交中...';
-
-  try {
-    const formData = new FormData(this);
-    const resp = await fetch(this.action, { method: 'POST', body: formData, headers: { Accept: 'application/json' } });
-    if (resp.ok) {
-      document.getElementById('uploadForm').style.display = 'none';
-      document.getElementById('successPanel').classList.add('show');
-    } else {
-      alert('提交失败，请重试');
-    }
-  } catch(err) {
-    alert('网络错误，请稍后重试');
-  }
-  btn.disabled = false;
-  btn.innerHTML = '📤 提交作品';
-});
-
-function resetForm() {
-  selectedFiles = [];
-  document.getElementById('fileList').innerHTML = '';
-  document.getElementById('uploadForm').reset();
-  document.getElementById('uploadForm').style.display = 'block';
-  document.getElementById('successPanel').classList.remove('show');
-  document.getElementById('submitBtn').disabled = false;
-  document.getElementById('submitBtn').innerHTML = '📤 提交作品';
-  window.scrollTo({ top: document.getElementById('formSection').offsetTop - 60, behavior: 'smooth' });
+function resetForm(){
+  selectedFiles=[];document.getElementById('fileList').innerHTML=''
+  document.getElementById('uploadForm').reset()
+  document.getElementById('uploadForm').style.display='block'
+  document.getElementById('successMsg').classList.remove('show')
+  window.scrollTo({top:document.getElementById('uploadForm').offsetTop-60,behavior:'smooth'})
 }
 </script>
 </body>
