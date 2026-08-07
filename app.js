@@ -51,14 +51,12 @@
   function renderOverview() {
     screen.innerHTML = `
       <section class="screen" data-screen="overview">
-        <div class="page-body">
-          <h1 class="page-title">游渭南</h1>
-          ${assetSlot(config.assets.overview, "overview-art")}
-          <div class="spot-grid">
-            ${config.spots.map((spot) => `
-              <button class="spot-card" type="button" data-spot="${escapeHtml(spot.id)}" aria-label="${escapeHtml(spot.name)}">
-                ${assetSlot(spot.asset)}
-                <span class="spot-card-copy"><strong>${escapeHtml(spot.name)}</strong></span>
+        <div class="p2-design">
+          <img class="p2-design-background" src="${escapeHtml(config.assets.overview)}" alt="游渭南" />
+          <div class="p2-spot-buttons">
+            ${config.spots.map((spot, index) => `
+              <button class="p2-spot-button p2-spot-button-${index + 1}" type="button" data-spot="${escapeHtml(spot.id)}" aria-label="${escapeHtml(spot.name)}">
+                <img src="${escapeHtml(spot.buttonAsset)}" alt="" />
               </button>`).join("")}
           </div>
         </div>

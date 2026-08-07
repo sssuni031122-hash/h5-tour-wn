@@ -26,6 +26,7 @@ window.H5_CONFIG = {
       ],
       route: "山河东线",
       asset: "assets/spots/01-huashan.jpg",
+      buttonAsset: "assets/buttons/spots/01-huashan.png",
     },
     {
       id: "cangjiemiao",
@@ -38,6 +39,7 @@ window.H5_CONFIG = {
       ],
       route: "文明非遗线",
       asset: "assets/spots/02-cangjiemiao.jpg",
+      buttonAsset: "assets/buttons/spots/02-cangjiemiao.png",
     },
     {
       id: "qiachuan",
@@ -50,6 +52,7 @@ window.H5_CONFIG = {
       ],
       route: "黄河人文线",
       asset: "assets/spots/03-qiachuan.jpg",
+      buttonAsset: "assets/buttons/spots/03-qiachuan.png",
     },
     {
       id: "hancheng",
@@ -62,6 +65,7 @@ window.H5_CONFIG = {
       ],
       route: "黄河人文线",
       asset: "assets/spots/04-hancheng.jpg",
+      buttonAsset: "assets/buttons/spots/04-hancheng.png",
     },
     {
       id: "tongguan",
@@ -74,6 +78,7 @@ window.H5_CONFIG = {
       ],
       route: "山河东线",
       asset: "assets/spots/05-tongguan.jpg",
+      buttonAsset: "assets/buttons/spots/05-tongguan.png",
     },
     {
       id: "fengtuyicang",
@@ -86,6 +91,7 @@ window.H5_CONFIG = {
       ],
       route: "黄河人文线",
       asset: "assets/spots/06-fengtuyicang.jpg",
+      buttonAsset: "assets/buttons/spots/06-fengtuyicang.png",
     },
     {
       id: "yaotouyao",
@@ -98,6 +104,7 @@ window.H5_CONFIG = {
       ],
       route: "文明非遗线",
       asset: "assets/spots/07-yaotouyao.jpg",
+      buttonAsset: "assets/buttons/spots/07-yaotouyao.png",
     },
     {
       id: "laojie",
@@ -110,6 +117,7 @@ window.H5_CONFIG = {
       ],
       route: "山河东线",
       asset: "assets/spots/08-laojie.jpg",
+      buttonAsset: "assets/buttons/spots/08-laojie.png",
     },
   ],
 };
