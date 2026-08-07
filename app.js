@@ -4,10 +4,27 @@
   const config = window.H5_CONFIG;
   const screen = document.getElementById("screen");
   const submitMask = document.getElementById("submitMask");
+  const successModal = document.getElementById("successModal");
+  const successCode = document.getElementById("successCode");
   const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null, preloadedImages: [] };
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
   const allowedExtensions = /\.(jpe?g|png|webp|heic|heif)$/i;
   const maxFileSize = 10 * 1024 * 1024;
+  let cloudbaseApp = null;
+
+  function extensionFor(file) {
+    const byType = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif" };
+    return byType[file.type] || file.name.split(".").pop()?.toLowerCase() || "bin";
+  }
+
+  async function ensureCloudBaseSession() {
+    if (!window.cloudbase) throw new Error("数据服务加载失败，请刷新页面后重试");
+    if (!cloudbaseApp) cloudbaseApp = window.cloudbase.init({ env: config.cloudbaseEnvId });
+    const auth = cloudbaseApp.auth({ persistence: "local" });
+    const state = typeof auth.getLoginState === "function" ? await auth.getLoginState() : null;
+    if (!state) await auth.signInAnonymously();
+    return cloudbaseApp;
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -133,6 +150,13 @@
             </div>
             <div class="form-group"><label class="field-label" for="name">您的姓名</label><input id="name" name="name" type="text" maxlength="30" autocomplete="name" /><p class="field-error" data-error-for="name"></p></div>
             <div class="form-group"><label class="field-label" for="phone">联系电话</label><input id="phone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" /><p class="field-error" data-error-for="phone"></p></div>
+            <div class="form-group consent-group">
+              <label class="consent-row" for="consent">
+                <input id="consent" name="consent" type="checkbox" required />
+                <span>我已阅读并同意主办方为本次活动报名、作品收集与审核、抽奖及获奖联系之目的，收集和处理本人提交的姓名、手机号及图片资料。</span>
+              </label>
+              <p class="field-error" data-error-for="consent"></p>
+            </div>
             <button class="primary-button submit-button" id="submitButton" type="submit">抽大奖</button>
           </form>
         </div>
@@ -227,6 +251,7 @@
     if (!form.elements.name.value.trim() || form.elements.name.value.trim().length > 30) { setFieldError("name", "您的姓名"); valid = false; }
     if (!/^1[3-9]\d{9}$/.test(form.elements.phone.value.trim())) { setFieldError("phone", "联系电话"); valid = false; }
     if (!state.selectedFile && !localSubmitTestMode()) { setFieldError("photo", "点击上传图片"); valid = false; }
+    if (!form.elements.consent.checked) { setFieldError("consent", "请阅读并勾选同意后再提交"); valid = false; }
     return valid;
   }
 
@@ -237,10 +262,48 @@
       if (testMode === "success") return { code: "WN-20260807-TEST0001" };
       throw new Error("抽大奖");
     }
-    const response = await fetch(config.apiUrl, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.code) throw new Error("抽大奖");
-    return result;
+    const app = await ensureCloudBaseSession();
+    const id = crypto.randomUUID();
+    const day = new Date().toISOString().slice(0, 10);
+    const cloudPath = `submissions-temp/${day}/${id}/photo.${extensionFor(state.selectedFile)}`;
+    let uploadedFileId = "";
+    try {
+      const upload = await app.uploadFile({ cloudPath, filePath: state.selectedFile });
+      uploadedFileId = upload.fileID;
+      const response = await app.callFunction({
+        name: config.cloudbaseSubmitFunction,
+        data: {
+          name: form.elements.name.value.trim(),
+          phone: form.elements.phone.value.trim(),
+          entryType: form.elements.entryType.value,
+          consent: form.elements.consent.checked,
+          photoFileId: uploadedFileId,
+          photoName: state.selectedFile.name,
+          photoType: state.selectedFile.type,
+          photoSize: state.selectedFile.size,
+        },
+      });
+      const result = response.result || response;
+      if (!result.ok || !result.code) throw new Error(result.error || "提交失败，请稍后重试");
+      return result;
+    } catch (error) {
+      if (uploadedFileId) {
+        try { await app.deleteFile({ fileList: [uploadedFileId] }); } catch (_) {}
+      }
+      throw error;
+    }
+  }
+
+  function openSuccessModal(code) {
+    successCode.textContent = code;
+    successModal.classList.add("show");
+    successModal.setAttribute("aria-hidden", "false");
+    document.getElementById("continueSubmit").focus();
+  }
+
+  function closeSuccessModal() {
+    successModal.classList.remove("show");
+    successModal.setAttribute("aria-hidden", "true");
   }
 
   async function handleSubmit(event) {
@@ -253,10 +316,12 @@
     try {
       const result = await submitFormData(form);
       state.selectedFile = null;
-      renderSuccess(result.code);
+      form.reset();
+      updateFileUI();
+      openSuccessModal(result.code);
     } catch (error) {
       const banner = document.getElementById("statusBanner");
-      if (banner) { banner.textContent = "抽大奖"; banner.className = "status-banner show error"; }
+      if (banner) { banner.textContent = error.message || "提交失败，请稍后重试"; banner.className = "status-banner show error"; }
     } finally {
       button.disabled = false;
       submitMask.classList.remove("show");
@@ -270,6 +335,15 @@
     if (target.dataset.spot) return navigate("detail", target.dataset.spot);
     if (target.dataset.action === "join-from-spot") return navigate("entry");
     if (target.dataset.entryType) { state.entryType = target.dataset.entryType; state.selectedFile = null; return navigate("form"); }
+  });
+
+  document.getElementById("continueSubmit").addEventListener("click", () => {
+    closeSuccessModal();
+    document.getElementById("photo")?.focus();
+  });
+  document.getElementById("returnHome").addEventListener("click", () => {
+    closeSuccessModal();
+    navigate("home");
   });
 
   window.addEventListener("hashchange", () => { routeFromHash(); window.scrollTo(0, 0); render(); });

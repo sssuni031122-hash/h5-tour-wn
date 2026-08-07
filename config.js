@@ -1,5 +1,6 @@
 window.H5_CONFIG = {
-  apiUrl: "https://wnsyh2026.socialmedia-fanchi.com/api/submit",
+  cloudbaseEnvId: "weinan-h5-2026-d7g0bsxva8f547fe5",
+  cloudbaseSubmitFunction: "submitActivity",
   activity: {
     title: "6000年渭南一朵 Hua",
     subtitle: "循着一朵花，读懂渭南与华夏文明",

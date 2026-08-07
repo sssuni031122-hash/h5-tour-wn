@@ -12,7 +12,7 @@
     <link rel="preload" as="image" href="assets/pages/p1-home.webp?v=20260807i" fetchpriority="high" />
     <link rel="preload" as="image" href="assets/pages/p1-button-tour.webp?v=20260807i" />
     <link rel="preload" as="image" href="assets/pages/p1-button-prize.webp?v=20260807i" />
-    <link rel="stylesheet" href="styles.css?v=20260807i" />
+    <link rel="stylesheet" href="styles.css?v=20260807k" />
   </head>
   <body>
     <div class="app-shell" id="app">
@@ -29,9 +29,23 @@
           <span class="spinner" aria-hidden="true"></span>
         </div>
       </div>
+
+      <div class="success-modal" id="successModal" aria-hidden="true">
+        <div class="success-modal-card" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
+          <span class="success-mark" aria-hidden="true">✓</span>
+          <h2 id="successModalTitle">提交成功</h2>
+          <p>感谢参与，本次提交编号为：</p>
+          <strong class="success-code" id="successCode"></strong>
+          <div class="success-modal-actions">
+            <button class="primary-button" id="continueSubmit" type="button">继续上传</button>
+            <button class="secondary-button" id="returnHome" type="button">返回首页</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script src="config.js?v=20260807i"></script>
-    <script src="app.js?v=20260807i"></script>
+    <script src="https://static.cloudbase.net/cloudbase-js-sdk/3.7.1/cloudbase.full.js"></script>
+    <script src="config.js?v=20260807k"></script>
+    <script src="app.js?v=20260807k"></script>
   </body>
 </html>
