@@ -55,6 +55,14 @@
       <section class="screen" data-screen="overview">
         <div class="p2-design">
           <img class="p2-design-background" src="${escapeHtml(config.assets.overview)}" alt="游渭南" />
+          <div class="p2-clouds" aria-hidden="true">
+            <span class="p2-cloud p2-cloud-1"></span>
+            <span class="p2-cloud p2-cloud-2"></span>
+            <span class="p2-cloud p2-cloud-3"></span>
+            <span class="p2-cloud p2-cloud-4"></span>
+            <span class="p2-cloud p2-cloud-5"></span>
+            <span class="p2-cloud p2-cloud-6"></span>
+          </div>
           <div class="p2-spot-buttons">
             ${overviewSpots.map((spot, index) => `
               <button class="p2-spot-button p2-spot-button-${index + 1}" type="button" data-spot="${escapeHtml(spot.id)}" aria-label="${escapeHtml(spot.name)}">

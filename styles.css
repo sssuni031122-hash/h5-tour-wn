@@ -121,7 +121,7 @@ button {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform-origin: 50% 50%;
-  animation: p1-button-breathe 2.8s ease-in-out infinite;
+  animation: p1-button-breathe 1.8s ease-in-out infinite;
 }
 
 .p1-hotspot > img {
@@ -182,24 +182,24 @@ button {
   opacity: 0.78;
   transform-origin: 50% 45%;
   will-change: transform, opacity;
-  animation: p1-petals-fall 7.5s ease-in-out infinite;
+  animation: p1-petals-fall 5.2s ease-in-out infinite;
 }
 
 @keyframes p1-petals-fall {
   0% {
-    opacity: 0.38;
-    transform: translate3d(-0.8%, -2.4%, 0) rotate(-0.8deg);
+    opacity: 0.72;
+    transform: translate3d(-1.2%, -3.5%, 0) rotate(-1deg) scale(1.02);
   }
   18% {
-    opacity: 0.88;
+    opacity: 1;
   }
   72% {
-    opacity: 0.92;
-    transform: translate3d(0.9%, 4.2%, 0) rotate(0.9deg);
+    opacity: 0.96;
+    transform: translate3d(1.2%, 7.2%, 0) rotate(1.2deg) scale(1.04);
   }
   100% {
     opacity: 0;
-    transform: translate3d(-0.3%, 7.5%, 0) rotate(-0.3deg);
+    transform: translate3d(-0.4%, 13%, 0) rotate(-0.4deg) scale(1.05);
   }
 }
 
@@ -223,6 +223,41 @@ button {
   inset: 0;
 }
 
+.p2-clouds {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.p2-cloud {
+  position: absolute;
+  width: 20%;
+  height: 0.72%;
+  border-radius: 999px;
+  background: rgba(255, 248, 218, 0.46);
+  box-shadow:
+    18px -5px 0 -1px rgba(255, 248, 218, 0.28),
+    42px 2px 0 -2px rgba(255, 248, 218, 0.24),
+    -18px 3px 0 -2px rgba(255, 248, 218, 0.2);
+  filter: blur(0.7px);
+  will-change: transform, opacity;
+  animation: p2-cloud-drift 7s ease-in-out infinite alternate;
+}
+
+.p2-cloud-1 { top: 13%; left: -6%; width: 24%; }
+.p2-cloud-2 { top: 24.5%; right: -5%; width: 18%; animation-delay: -2s; animation-duration: 8.5s; }
+.p2-cloud-3 { top: 42%; left: -8%; width: 22%; animation-delay: -4s; animation-duration: 9s; }
+.p2-cloud-4 { top: 59%; right: -7%; width: 20%; animation-delay: -1s; animation-duration: 7.8s; }
+.p2-cloud-5 { top: 76%; left: -5%; width: 18%; animation-delay: -5s; animation-duration: 9.5s; }
+.p2-cloud-6 { top: 92%; right: -8%; width: 24%; animation-delay: -3s; animation-duration: 8.8s; }
+
+@keyframes p2-cloud-drift {
+  0% { opacity: 0.42; transform: translate3d(-8%, -1px, 0) scaleX(0.96); }
+  100% { opacity: 0.78; transform: translate3d(30%, 2px, 0) scaleX(1.05); }
+}
+
 .p2-spot-button {
   position: absolute;
   width: 34.17%;
@@ -243,10 +278,10 @@ button {
 
 .p2-spot-button:nth-child(even) { left: 57.65%; }
 .p2-spot-button:nth-child(odd) { left: 8.2%; }
-.p2-spot-button-1, .p2-spot-button-2 { top: 31.5%; }
-.p2-spot-button-3, .p2-spot-button-4 { top: 50.7%; }
-.p2-spot-button-5, .p2-spot-button-6 { top: 70.3%; }
-.p2-spot-button-7, .p2-spot-button-8 { top: 89.6%; }
+.p2-spot-button-1, .p2-spot-button-2 { top: 32.15%; }
+.p2-spot-button-3, .p2-spot-button-4 { top: 51.45%; }
+.p2-spot-button-5, .p2-spot-button-6 { top: 71.05%; }
+.p2-spot-button-7, .p2-spot-button-8 { top: 90.25%; }
 
 .p2-spot-button:nth-child(2n) { animation-delay: 0.35s; }
 .p2-spot-button:nth-child(3n) { animation-delay: 0.7s; }
