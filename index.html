@@ -39,6 +39,10 @@
 
   .consent-row{display:flex!important;align-items:flex-start;gap:10px;font-size:13px!important;line-height:1.6;color:#686879;cursor:pointer}
   .consent-row input{width:18px!important;height:18px;margin-top:1px;flex:0 0 auto;accent-color:#e8734a}
+  .entry-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .entry-option{display:flex!important;align-items:flex-start;gap:8px;padding:12px;border:1px solid #e8e8f0;border-radius:12px;background:#f7f8fc;font-weight:500!important;line-height:1.45;cursor:pointer}
+  .entry-option input{width:16px!important;height:16px;margin-top:2px;flex:0 0 auto;accent-color:#e8734a}
+  .entry-option small{display:block;margin-top:3px;color:#8a8a9a;font-weight:400}
   .data-note{font-size:12px;line-height:1.6;color:#8a8a9a;margin:-4px 0 18px}
   .submission-code{display:block;margin-top:12px;padding:10px 12px;border-radius:10px;background:#f7f8fc;color:#2d2d3a;font-size:14px;word-break:break-all}
 
@@ -48,6 +52,7 @@
   .success-msg h3{font-size:20px;color:#3b8c6e;margin-bottom:8px}
 
   .footer{text-align:center;padding:24px;font-size:12px;color:#8a8a9a}
+  @media(max-width:420px){.entry-options{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -75,6 +80,19 @@
         <input type="tel" name="phone" placeholder="请输入手机号码" required maxlength="11">
       </div>
       <div class="form-group">
+        <label>参与方式 <span class="req">*</span></label>
+        <div class="entry-options">
+          <label class="entry-option">
+            <input type="radio" name="entryType" value="photo" checked>
+            <span>普通打卡照片<small>1个抽奖权重</small></span>
+          </label>
+          <label class="entry-option">
+            <input type="radio" name="entryType" value="social_share">
+            <span>社交媒体截图<small>2个抽奖权重</small></span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
         <label>上传作品 <span class="req">*</span></label>
         <div class="file-zone" onclick="document.getElementById('photo').click()">
           <span style="font-size:36px">📷</span>
@@ -89,7 +107,7 @@
           <span>我已阅读并同意：姓名、手机号和上传图片仅用于本次活动联系、作品收集与审核，不在公开页面展示。</span>
         </label>
       </div>
-      <p class="data-note">每次提交1张照片；需要上传多张时，提交成功后可继续填写。每次提交都会生成独立编号，方便后续查询。</p>
+      <p class="data-note">每次提交1张图片，同一手机号每天最多成功提交3次。符合翻倍条件的社交媒体截图计2个抽奖权重；每次提交都会生成独立编号。</p>
 
       <button type="submit" class="btn btn-primary" id="submitBtn">📤 提交作品</button>
     </form>
