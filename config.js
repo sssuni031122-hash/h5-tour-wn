@@ -7,6 +7,9 @@ window.H5_CONFIG = {
   },
   assets: {
     home: "assets/pages/p1-home.jpg",
+    homePetals: "assets/pages/p1-petals.png",
+    homeTourButton: "assets/pages/p1-button-tour.png",
+    homePrizeButton: "assets/pages/p1-button-prize.png",
     overview: "assets/pages/p2-overview.jpg",
     prize: "assets/pages/p4-entry.jpg",
     form: "assets/pages/p5-form.jpg",

@@ -39,8 +39,11 @@
       <section class="screen screen-home" data-screen="home">
         <div class="p1-design">
           <img src="${escapeHtml(config.assets.home)}" alt="6000年渭南一朵花" />
-          <button class="p1-hotspot p1-hotspot-tour" type="button" data-nav="overview" aria-label="游渭南"></button>
-          <button class="p1-hotspot p1-hotspot-prize" type="button" data-nav="entry" aria-label="抽大奖"></button>
+          <div class="p1-petals" aria-hidden="true">
+            <img class="p1-petals-layer" src="${escapeHtml(config.assets.homePetals)}" alt="" />
+          </div>
+          <button class="p1-hotspot p1-hotspot-tour" type="button" data-nav="overview" aria-label="游渭南"><img src="${escapeHtml(config.assets.homeTourButton)}" alt="" /></button>
+          <button class="p1-hotspot p1-hotspot-prize" type="button" data-nav="entry" aria-label="抽大奖"><img src="${escapeHtml(config.assets.homePrizeButton)}" alt="" /></button>
         </div>
       </section>`;
   }
@@ -81,8 +84,8 @@
           <h1 class="page-title">抽大奖</h1>
           ${assetSlot(config.assets.prize, "prize-art")}
           <div class="choice-list">
-            <button class="choice-card" type="button" data-entry-type="photo"><span><strong>啥也不想<br />传个照片再说！</strong><small>每人每天最多3次上传图片！<br />上传越多，中奖机会越高哦！</small></span></button>
-            <button class="choice-card" type="button" data-entry-type="social_share"><span><strong>发布抖音/小红书/视频号<br />截图就能上传咯！</strong><small>发布社交媒体上传截图<br />中奖概率可以翻倍哦！</small></span></button>
+            <button class="choice-card" type="button" data-entry-type="photo"><span><strong>普通打卡照片</strong></span></button>
+            <button class="choice-card" type="button" data-entry-type="social_share"><span><strong>社交媒体发布截图</strong></span></button>
           </div>
         </div>
       </section>`;

@@ -99,6 +99,7 @@ button {
   position: relative;
   width: 100%;
   line-height: 0;
+  overflow: hidden;
 }
 
 .p1-design > img {
@@ -109,15 +110,38 @@ button {
 
 .p1-hotspot {
   position: absolute;
-  left: 35.8%;
-  width: 34.5%;
-  height: 4.35%;
+  z-index: 4;
+  left: 26.5%;
+  width: 47%;
+  height: 6.15%;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transform-origin: 50% 50%;
+  animation: p1-button-tap 2.4s ease-in-out infinite;
+}
+
+.p1-hotspot > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.p1-hotspot::after {
+  position: absolute;
+  right: 3.5%;
+  bottom: 4%;
+  width: 12%;
+  aspect-ratio: 1;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  content: "";
+  opacity: 0;
+  animation: p1-tap-ring 2.4s ease-out infinite;
 }
 
 .p1-hotspot:focus-visible {
@@ -126,11 +150,62 @@ button {
 }
 
 .p1-hotspot-tour {
-  top: 24.15%;
+  top: 22.25%;
 }
 
 .p1-hotspot-prize {
-  top: 29.05%;
+  top: 29.2%;
+  animation-delay: 1.2s;
+}
+
+.p1-hotspot-prize::after {
+  animation-delay: 1.2s;
+}
+
+.p1-petals {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 24.75%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.p1-petals-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  opacity: 0.78;
+  transform-origin: 50% 45%;
+  will-change: transform, opacity;
+  animation: p1-petals-float 6.5s ease-in-out infinite alternate;
+}
+
+@keyframes p1-petals-float {
+  0% {
+    opacity: 0.68;
+    transform: translate3d(-0.7%, -0.35%, 0) rotate(-0.7deg);
+  }
+  100% {
+    opacity: 0.92;
+    transform: translate3d(0.8%, 0.55%, 0) rotate(0.8deg);
+  }
+}
+
+@keyframes p1-button-tap {
+  0%, 72%, 100% { transform: scale(1); }
+  79% { transform: scale(0.965); }
+  87% { transform: scale(1.025); }
+}
+
+@keyframes p1-tap-ring {
+  0%, 70% { opacity: 0; transform: scale(0.55); }
+  78% { opacity: 0.9; }
+  92%, 100% { opacity: 0; transform: scale(1.65); }
 }
 
 .wireframe-badge {
@@ -1115,21 +1190,98 @@ noscript {
   }
 }
 
+/* 750px 设计稿按 2 倍图映射到 375px 手机逻辑宽度 */
+.app-shell {
+  max-width: 375px;
+}
+
+.page-body {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+[data-screen="overview"] .page-body {
+  min-height: 1000px;
+}
+
+.spot-grid {
+  grid-template-columns: repeat(2, 162.5px);
+  gap: 10px;
+}
+
+.spot-card {
+  width: 162.5px;
+  height: 120px;
+  min-height: 120px;
+}
+
+.spot-card .asset-slot {
+  min-height: 80px;
+}
+
+.spot-card-copy {
+  min-height: 40px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.spot-card strong {
+  font-size: 14px;
+}
+
+[data-screen="detail"] {
+  min-height: 1300px;
+}
+
+.detail-actions .primary-button,
+.submit-button {
+  width: 335px;
+  min-height: 52px;
+}
+
+.form-card .submit-button {
+  margin-left: -21px;
+}
+
+[data-screen="entry"] .page-body {
+  min-height: 812px;
+}
+
+.choice-list {
+  gap: 16px;
+}
+
+.choice-card {
+  width: 335px;
+  min-height: 80px;
+  padding: 14px 20px;
+}
+
+.choice-card strong {
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.form-art {
+  min-height: 210px;
+  max-height: 210px;
+}
+
 @media (min-width: 620px) {
   .page-body,
   .content-stack {
-    padding-right: 34px;
-    padding-left: 34px;
+    padding-right: 20px;
+    padding-left: 20px;
   }
 
   .detail-title-wrap,
   .detail-actions {
-    padding-right: 34px;
-    padding-left: 34px;
+    padding-right: 20px;
+    padding-left: 20px;
   }
 
   .spot-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 162.5px);
   }
 }
 
@@ -1149,6 +1301,18 @@ noscript {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .p1-petals {
+    display: none;
+  }
+
+  .p1-hotspot {
+    animation: none !important;
+  }
+
+  .p1-hotspot::after {
+    display: none;
+  }
+
   *,
   *::before,
   *::after {
