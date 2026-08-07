@@ -121,7 +121,7 @@ button {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform-origin: 50% 50%;
-  animation: p1-button-tap 2.4s ease-in-out infinite;
+  animation: p1-button-breathe 2.8s ease-in-out infinite;
 }
 
 .p1-hotspot > img {
@@ -155,7 +155,7 @@ button {
 
 .p1-hotspot-prize {
   top: 29.2%;
-  animation-delay: 1.2s;
+  animation-delay: 0.45s;
 }
 
 .p1-hotspot-prize::after {
@@ -182,17 +182,24 @@ button {
   opacity: 0.78;
   transform-origin: 50% 45%;
   will-change: transform, opacity;
-  animation: p1-petals-float 6.5s ease-in-out infinite alternate;
+  animation: p1-petals-fall 7.5s ease-in-out infinite;
 }
 
-@keyframes p1-petals-float {
+@keyframes p1-petals-fall {
   0% {
-    opacity: 0.68;
-    transform: translate3d(-0.7%, -1.2%, 0) rotate(-0.7deg);
+    opacity: 0.38;
+    transform: translate3d(-0.8%, -2.4%, 0) rotate(-0.8deg);
+  }
+  18% {
+    opacity: 0.88;
+  }
+  72% {
+    opacity: 0.92;
+    transform: translate3d(0.9%, 4.2%, 0) rotate(0.9deg);
   }
   100% {
-    opacity: 0.92;
-    transform: translate3d(0.8%, 2.2%, 0) rotate(0.8deg);
+    opacity: 0;
+    transform: translate3d(-0.3%, 7.5%, 0) rotate(-0.3deg);
   }
 }
 
@@ -254,10 +261,15 @@ button {
   90% { transform: scale(1.035); filter: brightness(1.08); }
 }
 
-@keyframes p1-button-tap {
-  0%, 72%, 100% { transform: scale(1); }
-  79% { transform: scale(0.965); }
-  87% { transform: scale(1.025); }
+@keyframes p1-button-breathe {
+  0%, 100% {
+    transform: scale(0.975);
+    filter: brightness(0.98) drop-shadow(0 3px 5px rgba(209, 74, 27, 0.18));
+  }
+  50% {
+    transform: scale(1.035);
+    filter: brightness(1.08) drop-shadow(0 8px 12px rgba(209, 74, 27, 0.34));
+  }
 }
 
 @keyframes p1-tap-ring {
@@ -1239,6 +1251,22 @@ noscript {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.screen.screen-leaving {
+  pointer-events: none;
+  animation: screen-out 380ms ease-in both;
+}
+
+@keyframes screen-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.992);
   }
 }
 
