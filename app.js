@@ -4,7 +4,7 @@
   const config = window.H5_CONFIG;
   const screen = document.getElementById("screen");
   const submitMask = document.getElementById("submitMask");
-  const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null };
+  const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null, preloadedImages: [] };
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
   const allowedExtensions = /\.(jpe?g|png|webp|heic|heif)$/i;
   const maxFileSize = 10 * 1024 * 1024;
@@ -34,13 +34,30 @@
     });
   }
 
+  function preloadOverviewAssets() {
+    const sources = [config.assets.overview, ...config.spots.map((spot) => spot.buttonAsset)].filter(Boolean);
+    sources.forEach((src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.src = src;
+      state.preloadedImages.push(image);
+    });
+  }
+
+  function scheduleOverviewPreload() {
+    const run = () => preloadOverviewAssets();
+    if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 900 });
+    else window.setTimeout(run, 350);
+  }
+
   function renderHome() {
     screen.innerHTML = `
       <section class="screen screen-home" data-screen="home">
         <div class="p1-design">
-          <img src="${escapeHtml(config.assets.home)}" alt="6000年渭南一朵花" />
+          <img src="${escapeHtml(config.assets.home)}" alt="6000年渭南一朵花" width="750" height="2298" decoding="async" fetchpriority="high" />
           <div class="p1-petals" aria-hidden="true">
-            <img class="p1-petals-layer" src="${escapeHtml(config.assets.homePetals)}" alt="" />
+            <img class="p1-petals-layer" src="${escapeHtml(config.assets.homePetals)}" alt="" decoding="async" />
           </div>
           <button class="p1-hotspot p1-hotspot-tour" type="button" data-nav="overview" aria-label="游渭南"><img src="${escapeHtml(config.assets.homeTourButton)}" alt="" /></button>
           <button class="p1-hotspot p1-hotspot-prize" type="button" data-nav="entry" aria-label="抽大奖"><img src="${escapeHtml(config.assets.homePrizeButton)}" alt="" /></button>
@@ -54,7 +71,7 @@
     screen.innerHTML = `
       <section class="screen" data-screen="overview">
         <div class="p2-design">
-          <img class="p2-design-background" src="${escapeHtml(config.assets.overview)}" alt="游渭南" />
+          <img class="p2-design-background" src="${escapeHtml(config.assets.overview)}" alt="游渭南" width="750" height="2150" decoding="async" fetchpriority="high" />
           <div class="p2-clouds" aria-hidden="true">
             <span class="p2-cloud p2-cloud-1"></span>
             <span class="p2-cloud p2-cloud-2"></span>
@@ -153,7 +170,7 @@
     if (state.route === "home" && (route === "overview" || route === "entry")) {
       clearTimeout(state.transitionTimer);
       screen.querySelector(".screen")?.classList.add("screen-leaving");
-      state.transitionTimer = setTimeout(() => { location.hash = nextHash; }, 380);
+      state.transitionTimer = setTimeout(() => { location.hash = nextHash; }, 150);
       return;
     }
     location.hash = nextHash;
@@ -258,5 +275,6 @@
   window.addEventListener("hashchange", () => { routeFromHash(); window.scrollTo(0, 0); render(); });
   routeFromHash();
   render();
+  scheduleOverviewPreload();
   requestAnimationFrame(() => document.getElementById("loadingScreen").classList.add("hide"));
 })();

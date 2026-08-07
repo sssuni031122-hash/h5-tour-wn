@@ -87,7 +87,7 @@ button {
 .screen {
   min-height: 100dvh;
   padding-bottom: calc(38px + env(safe-area-inset-bottom));
-  animation: screen-in 240ms ease-out both;
+  animation: screen-in 180ms ease-out both;
 }
 
 .screen-home {
@@ -121,7 +121,7 @@ button {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transform-origin: 50% 50%;
-  animation: p1-button-breathe 1.8s ease-in-out infinite;
+  animation: p1-button-breathe 1.25s ease-in-out infinite;
 }
 
 .p1-hotspot > img {
@@ -179,27 +179,29 @@ button {
   left: 0;
   width: 100%;
   height: auto;
-  opacity: 0.78;
+  opacity: 0.92;
   transform-origin: 50% 45%;
   will-change: transform, opacity;
-  animation: p1-petals-fall 5.2s ease-in-out infinite;
+  backface-visibility: hidden;
+  filter: saturate(1.18) drop-shadow(0 3px 3px rgba(255, 96, 42, 0.24));
+  animation: p1-petals-fall 2.6s linear infinite;
 }
 
 @keyframes p1-petals-fall {
   0% {
-    opacity: 0.72;
-    transform: translate3d(-1.2%, -3.5%, 0) rotate(-1deg) scale(1.02);
+    opacity: 0;
+    transform: translate3d(-1.8%, -10%, 0) rotate(-1.5deg) scale(1.03);
   }
-  18% {
+  6% {
     opacity: 1;
   }
-  72% {
-    opacity: 0.96;
-    transform: translate3d(1.2%, 7.2%, 0) rotate(1.2deg) scale(1.04);
+  82% {
+    opacity: 1;
+    transform: translate3d(1.8%, 20%, 0) rotate(2deg) scale(1.08);
   }
   100% {
     opacity: 0;
-    transform: translate3d(-0.4%, 13%, 0) rotate(-0.4deg) scale(1.05);
+    transform: translate3d(2.5%, 29%, 0) rotate(3deg) scale(1.1);
   }
 }
 
@@ -234,28 +236,33 @@ button {
 .p2-cloud {
   position: absolute;
   width: 20%;
-  height: 0.72%;
+  height: 0.9%;
   border-radius: 999px;
-  background: rgba(255, 248, 218, 0.46);
+  background:
+    radial-gradient(ellipse at 18% 62%, rgba(255, 249, 222, 0.15) 0 18%, transparent 20%),
+    radial-gradient(ellipse at 42% 38%, rgba(255, 249, 222, 0.48) 0 25%, transparent 27%),
+    radial-gradient(ellipse at 68% 58%, rgba(255, 249, 222, 0.38) 0 24%, transparent 26%),
+    radial-gradient(ellipse at 88% 46%, rgba(255, 249, 222, 0.16) 0 17%, transparent 19%);
   box-shadow:
-    18px -5px 0 -1px rgba(255, 248, 218, 0.28),
-    42px 2px 0 -2px rgba(255, 248, 218, 0.24),
-    -18px 3px 0 -2px rgba(255, 248, 218, 0.2);
-  filter: blur(0.7px);
-  will-change: transform, opacity;
-  animation: p2-cloud-drift 7s ease-in-out infinite alternate;
+    20px -4px 10px -5px rgba(255, 248, 218, 0.22),
+    -16px 3px 9px -5px rgba(255, 248, 218, 0.18);
+  filter: blur(0.45px);
+  opacity: 0.72;
+  will-change: transform;
+  backface-visibility: hidden;
+  animation: p2-cloud-drift 12s ease-in-out infinite alternate;
 }
 
 .p2-cloud-1 { top: 13%; left: -6%; width: 24%; }
-.p2-cloud-2 { top: 24.5%; right: -5%; width: 18%; animation-delay: -2s; animation-duration: 8.5s; }
-.p2-cloud-3 { top: 42%; left: -8%; width: 22%; animation-delay: -4s; animation-duration: 9s; }
-.p2-cloud-4 { top: 59%; right: -7%; width: 20%; animation-delay: -1s; animation-duration: 7.8s; }
-.p2-cloud-5 { top: 76%; left: -5%; width: 18%; animation-delay: -5s; animation-duration: 9.5s; }
-.p2-cloud-6 { top: 92%; right: -8%; width: 24%; animation-delay: -3s; animation-duration: 8.8s; }
+.p2-cloud-2 { top: 24.5%; right: -5%; width: 18%; animation-delay: -3s; animation-duration: 14s; }
+.p2-cloud-3 { top: 42%; left: -8%; width: 22%; animation-delay: -7s; animation-duration: 13s; }
+.p2-cloud-4 { top: 59%; right: -7%; width: 20%; animation-delay: -5s; animation-duration: 15s; }
+.p2-cloud-5 { top: 76%; left: -5%; width: 18%; animation-delay: -9s; animation-duration: 13.5s; }
+.p2-cloud-6 { top: 92%; right: -8%; width: 24%; animation-delay: -4s; animation-duration: 16s; }
 
 @keyframes p2-cloud-drift {
-  0% { opacity: 0.42; transform: translate3d(-8%, -1px, 0) scaleX(0.96); }
-  100% { opacity: 0.78; transform: translate3d(30%, 2px, 0) scaleX(1.05); }
+  0% { transform: translate3d(-7%, -1px, 0) scaleX(0.98); }
+  100% { transform: translate3d(24%, 1px, 0) scaleX(1.02); }
 }
 
 .p2-spot-button {
@@ -276,12 +283,12 @@ button {
   object-fit: contain;
 }
 
-.p2-spot-button:nth-child(even) { left: 57.65%; }
-.p2-spot-button:nth-child(odd) { left: 8.2%; }
-.p2-spot-button-1, .p2-spot-button-2 { top: 32.15%; }
-.p2-spot-button-3, .p2-spot-button-4 { top: 51.45%; }
-.p2-spot-button-5, .p2-spot-button-6 { top: 71.05%; }
-.p2-spot-button-7, .p2-spot-button-8 { top: 90.25%; }
+.p2-spot-button:nth-child(even) { left: 57.73%; }
+.p2-spot-button:nth-child(odd) { left: 8.93%; }
+.p2-spot-button-1, .p2-spot-button-2 { top: 31.63%; }
+.p2-spot-button-3, .p2-spot-button-4 { top: 51.72%; }
+.p2-spot-button-5, .p2-spot-button-6 { top: 71.86%; }
+.p2-spot-button-7, .p2-spot-button-8 { top: 90.88%; }
 
 .p2-spot-button:nth-child(2n) { animation-delay: 0.35s; }
 .p2-spot-button:nth-child(3n) { animation-delay: 0.7s; }
@@ -1291,7 +1298,7 @@ noscript {
 
 .screen.screen-leaving {
   pointer-events: none;
-  animation: screen-out 380ms ease-in both;
+  animation: screen-out 150ms ease-in both;
 }
 
 @keyframes screen-out {
