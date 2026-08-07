@@ -37,6 +37,11 @@
   .btn-primary:hover{transform:translateY(-2px)}
   .btn-primary:disabled{opacity:.6;transform:none}
 
+  .consent-row{display:flex!important;align-items:flex-start;gap:10px;font-size:13px!important;line-height:1.6;color:#686879;cursor:pointer}
+  .consent-row input{width:18px!important;height:18px;margin-top:1px;flex:0 0 auto;accent-color:#e8734a}
+  .data-note{font-size:12px;line-height:1.6;color:#8a8a9a;margin:-4px 0 18px}
+  .submission-code{display:block;margin-top:12px;padding:10px 12px;border-radius:10px;background:#f7f8fc;color:#2d2d3a;font-size:14px;word-break:break-all}
+
   .success-msg{display:none;text-align:center;padding:40px 20px}
   .success-msg.show{display:block}
   .success-msg .icon{font-size:64px;margin-bottom:12px}
@@ -60,7 +65,7 @@
     <h2>📸 上传作品 · 留下联系方式</h2>
     <p class="sub">参与游渭南活动，赢取专属福利</p>
 
-    <form id="uploadForm" action="https://formspree.io/f/xbgrjrzz" method="POST" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data">
       <div class="form-group">
         <label>姓名 <span class="req">*</span></label>
         <input type="text" name="name" placeholder="请输入你的姓名" required>
@@ -70,36 +75,21 @@
         <input type="tel" name="phone" placeholder="请输入手机号码" required maxlength="11">
       </div>
       <div class="form-group">
-        <label>微信 / 邮箱</label>
-        <input type="text" name="contact" placeholder="方便后续联系">
-      </div>
-      <div class="form-group">
-        <label>作品主题</label>
-        <select name="theme">
-          <option value="">请选择作品主题</option>
-          <option value="华山风光">华山风光</option>
-          <option value="古城人文">古城人文</option>
-          <option value="黄河湿地">黄河湿地</option>
-          <option value="城市新貌">城市新貌</option>
-          <option value="美食特产">美食特产</option>
-          <option value="其他">其他</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label>上传作品 <span class="req">*</span></label>
-        <div class="file-zone" onclick="document.getElementById('photos').click()">
+        <div class="file-zone" onclick="document.getElementById('photo').click()">
           <span style="font-size:36px">📷</span>
-          <span style="font-size:14px;color:#8a8a9a">点击选择照片（可多选，最多5张）</span>
+          <span style="font-size:14px;color:#8a8a9a">点击选择1张照片（10MB以内）</span>
         </div>
-        <input type="file" name="photos" id="photos" accept="image/jpeg,image/png" multiple style="display:none" onchange="showFiles(this)">
+        <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" style="display:none" onchange="showFile(this)">
         <div class="file-list" id="fileList"></div>
       </div>
       <div class="form-group">
-        <label>作品简介（选填）</label>
-        <textarea name="desc" placeholder="简单介绍你的作品…" rows="3"></textarea>
+        <label class="consent-row">
+          <input type="checkbox" name="consent" required>
+          <span>我已阅读并同意：姓名、手机号和上传图片仅用于本次活动联系、作品收集与审核，不在公开页面展示。</span>
+        </label>
       </div>
-      <input type="hidden" name="_subject" value="游渭南 - 新提交">
-      <input type="hidden" name="_gotcha" style="display:none">
+      <p class="data-note">每次提交1张照片；需要上传多张时，提交成功后可继续填写。每次提交都会生成独立编号，方便后续查询。</p>
 
       <button type="submit" class="btn btn-primary" id="submitBtn">📤 提交作品</button>
     </form>
@@ -108,67 +98,76 @@
       <div class="icon">🎉</div>
       <h3>提交成功！</h3>
       <p style="color:#8a8a9a;font-size:14px;margin-top:8px">感谢参与「游渭南」活动</p>
+      <strong class="submission-code" id="submissionCode"></strong>
       <button class="btn btn-primary" style="margin-top:16px;background:linear-gradient(135deg,#3b8c6e,#2d6b53)" onclick="resetForm()">📸 继续上传</button>
     </div>
   </div>
 
-  <p style="text-align:center;font-size:12px;color:#8a8a9a;margin-top:20px">
-    数据由 Formspree 安全托管 · 查看路径：formspree.io/forms/xbgrjrzz/submissions
-  </p>
+  <p style="text-align:center;font-size:12px;color:#8a8a9a;margin-top:20px">提交数据由活动方统一保存与管理</p>
 </div>
 
 <!-- 底部 -->
 <footer class="footer">© 2026 游渭南 · 发现渭南之美</footer>
 
 <script>
-let selectedFiles = [];
+const SUBMIT_API = 'https://wnsyh2026.socialmedia-fanchi.com/api/submit';
+const ALLOWED_TYPES = ['image/jpeg','image/png','image/webp','image/heic','image/heif'];
+let selectedFile = null;
 
-function showFiles(input) {
-  for(let f of input.files) {
-    if(selectedFiles.length >= 5){alert('每次最多上传5张');break}
-    if(f.size > 10*1024*1024){alert(f.name+' 超过10MB限制');continue}
-    selectedFiles.push(f)
-  }
-  renderFiles()
-  input.value = ''
+function showFile(input) {
+  const file = input.files && input.files[0];
+  if(!file){selectedFile=null;renderFile();return}
+  if(!ALLOWED_TYPES.includes(file.type)){alert('仅支持 JPG、PNG、WebP 或 HEIC 图片');input.value='';return}
+  if(file.size<=0 || file.size>10*1024*1024){alert(file.name+' 超过10MB限制');input.value='';return}
+  selectedFile=file;
+  renderFile();
 }
 
-function renderFiles() {
-  document.getElementById('fileList').innerHTML = selectedFiles.map((f,i)=>
-    '<div class="file-item"><span>📷</span><span class="name">'+f.name+'</span><span style="font-size:11px;color:#8a8a9a">'+(f.size/1024/1024).toFixed(1)+'MB</span><span class="remove" onclick="removeFile('+i+')">✕</span></div>'
-  ).join('')
-  updateFileInput()
+function renderFile() {
+  const list=document.getElementById('fileList');
+  if(!selectedFile){list.innerHTML='';return}
+  list.innerHTML='<div class="file-item"><span>📷</span><span class="name"></span><span class="size" style="font-size:11px;color:#8a8a9a"></span><span class="remove" onclick="removeFile()">✕</span></div>';
+  list.querySelector('.name').textContent=selectedFile.name;
+  list.querySelector('.size').textContent=(selectedFile.size/1024/1024).toFixed(1)+'MB';
 }
 
-function removeFile(i){selectedFiles.splice(i,1);renderFiles()}
-
-function updateFileInput(){
-  const dt = new DataTransfer()
-  selectedFiles.forEach(f => dt.items.add(f))
-  document.getElementById('photos').files = dt.files
+function removeFile(){
+  selectedFile=null;
+  document.getElementById('photo').value='';
+  renderFile();
 }
 
 document.getElementById('uploadForm').addEventListener('submit',async function(e){
-  e.preventDefault()
-  if(selectedFiles.length===0){alert('请至少上传一张照片');return}
-  if(!/^1[3-9]\d{9}$/.test(this.phone.value.trim())){alert('请输入正确的手机号码');return}
-  const btn = document.getElementById('submitBtn')
-  btn.disabled = true; btn.textContent = '提交中...'
+  e.preventDefault();
+  if(!selectedFile){alert('请选择一张照片');return}
+  if(!/^1[3-9]\d{9}$/.test(this.phone.value.trim())){alert('请输入正确的11位手机号码');return}
+  if(!this.consent.checked){alert('请阅读并同意个人信息处理说明');return}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.textContent='提交中...';
   try{
-    const fd = new FormData(this)
-    const r = await fetch(this.action,{method:'POST',body:fd,headers:{Accept:'application/json'}})
-    if(r.ok){this.style.display='none';document.getElementById('successMsg').classList.add('show')}
-    else{alert('提交失败，请重试')}
-  }catch(e){alert('网络错误，请稍后重试')}
-  btn.disabled = false; btn.textContent = '📤 提交作品'
-})
+    const fd=new FormData(this);
+    const response=await fetch(SUBMIT_API,{method:'POST',body:fd,headers:{Accept:'application/json'}});
+    const result=await response.json().catch(()=>({}));
+    if(response.ok){
+      document.getElementById('submissionCode').textContent='提交编号：'+result.code;
+      this.style.display='none';
+      document.getElementById('successMsg').classList.add('show');
+    }else{
+      alert(result.error||'提交失败，请重试');
+    }
+  }catch(error){
+    alert('网络错误，请稍后重试');
+  }
+  btn.disabled=false;btn.textContent='📤 提交作品';
+});
 
 function resetForm(){
-  selectedFiles=[];document.getElementById('fileList').innerHTML=''
-  document.getElementById('uploadForm').reset()
-  document.getElementById('uploadForm').style.display='block'
-  document.getElementById('successMsg').classList.remove('show')
-  window.scrollTo({top:document.getElementById('uploadForm').offsetTop-60,behavior:'smooth'})
+  selectedFile=null;document.getElementById('fileList').innerHTML='';
+  document.getElementById('uploadForm').reset();
+  document.getElementById('uploadForm').style.display='block';
+  document.getElementById('successMsg').classList.remove('show');
+  document.getElementById('submissionCode').textContent='';
+  window.scrollTo({top:document.getElementById('uploadForm').offsetTop-60,behavior:'smooth'});
 }
 </script>
 </body>
