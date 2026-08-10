@@ -1,6 +1,8 @@
 window.H5_CONFIG = {
   cloudbaseEnvId: "weinan-h5-2026-d7g0bsxva8f547fe5",
   cloudbaseSubmitFunction: "submitActivity",
+  cloudbaseVisitFunction: "recordVisit",
+  visitRefreshInterval: 3 * 60 * 1000,
   activity: {
     title: "6000年渭南一朵 Hua",
     subtitle: "循着一朵花，读懂渭南与华夏文明",
@@ -12,8 +14,13 @@ window.H5_CONFIG = {
     homeTourButton: "assets/pages/p1-button-tour.webp?v=20260807i",
     homePrizeButton: "assets/pages/p1-button-prize.webp?v=20260807i",
     overview: "assets/pages/p2-overview.webp?v=20260807i",
-    prize: "assets/pages/p4-entry.jpg",
-    form: "assets/pages/p5-form.jpg",
+    detailCheckinButton: "assets/buttons/detail/checkin.webp?v=20260810c",
+    detailBackButton: "assets/buttons/detail/back.webp?v=20260810c",
+    prize: "assets/pages/p4-entry.jpg?v=20260810a",
+    prizePhotoButton: "assets/buttons/p4-photo.png?v=20260810a",
+    prizeSocialButton: "assets/buttons/p4-social.png?v=20260810a",
+    form: "assets/pages/p5-form.jpg?v=20260810a",
+    formSubmitButton: "assets/buttons/p5-submit.png?v=20260810a",
   },
   spots: [
     {
@@ -26,7 +33,7 @@ window.H5_CONFIG = {
         "六千年前，距华山约29公里的泉护村，先民把“花瓣纹”画在大大小小的陶盆上，成为了仰韶文化最重要的代表之一。1965年，考古学家苏秉琦写下“华山玫瑰燕山龙”，刻在陶盆上的史前之花，成为华夏民族早期统一社会的象征。民族的意念，可能早已经开在渭南先民的花纹里。",
       ],
       route: "山河东线",
-      asset: "assets/spots/01-huashan.jpg",
+      asset: "assets/details/01-huashan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/01-huashan.webp?v=20260807i",
     },
     {
@@ -39,7 +46,7 @@ window.H5_CONFIG = {
         "中国的甲骨文，是世界古典文字中，唯一绵延流传至今的文字，也是现代汉字的鼻祖。甲骨文字是中华先民留下的最宝贵的财富，当我们写下“人”“山”“水”“雨”仍然能够追溯，几千年前祖先画在龟甲上的刻痕。如果不信，来这里，写几笔试试？",
       ],
       route: "文明非遗线",
-      asset: "assets/spots/02-cangjiemiao.jpg",
+      asset: "assets/details/02-cangjiemiao.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/02-cangjiemiao.webp?v=20260807i",
     },
     {
@@ -52,7 +59,7 @@ window.H5_CONFIG = {
         "我们从不知道，《关雎》正是《诗经》里的第一篇诗集。作为一首情歌，孔子对它的评价极高：关雎，风之始也，所以风天下而正夫妇也。自古以来，夫妇关系是人伦之始，男女情感是风化起源。情感的心动，建立了整个社会的风化秩序。爱情的伟大，流传千年。",
       ],
       route: "黄河人文线",
-      asset: "assets/spots/03-qiachuan.jpg",
+      asset: "assets/details/03-qiachuan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/03-qiachuan.webp?v=20260807i",
     },
     {
@@ -65,7 +72,7 @@ window.H5_CONFIG = {
         "《史记》对于民族传承的作用，远远超过一本史书作品。它构建了中华民族的“起源叙事”，建立了民族共同体的认同作用，建立了“正统”的历史标准。是中华民族自我认知的奠基，也是民族文化认同的记忆图谱。如果说汉字让中华民族“形传”3000年，那么《史记》则让中华民族“魂续”3000年。",
       ],
       route: "黄河人文线",
-      asset: "assets/spots/04-hancheng.jpg",
+      asset: "assets/details/04-hancheng.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/04-hancheng.webp?v=20260807i",
     },
     {
@@ -78,7 +85,7 @@ window.H5_CONFIG = {
         "除了语文书上的名词名句，在守卫中原的1700年期间，潼关一共打了82场战事。无论胜败，这座城隘之下，埋藏着多少战士的尸骨。“山河表里潼关路”后半句是什么？“兴，百姓苦；亡，百姓苦。”潼关不仅见证着战事，也见证古时关中人民的艰难生存，与强大的意志魄力。",
       ],
       route: "山河东线",
-      asset: "assets/spots/05-tongguan.jpg",
+      asset: "assets/details/05-tongguan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/05-tongguan.webp?v=20260807i",
     },
     {
@@ -91,7 +98,7 @@ window.H5_CONFIG = {
         "一百多年前，清光绪八年，朝邑人阎敬铭在黄河岸边筑起这座仓城。此后每逢灾年，它便开仓放粮，救民无数。从老官台的粟种到“天下第一仓”，渭南的黄土里长着八千年农耕根脉。世界三大农业起源中心之一，一粒种子曾改变过东方文明的走向。装的不只是粮食，是农业大市的底气，是中国人的热肠。",
       ],
       route: "黄河人文线",
-      asset: "assets/spots/06-fengtuyicang.jpg",
+      asset: "assets/details/06-fengtuyicang.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/06-fengtuyicang.webp?v=20260807i",
     },
     {
@@ -104,7 +111,7 @@ window.H5_CONFIG = {
         "五千年前，华州泉护村，先民把信仰抟成雄鹰，铸成陶鹰鼎；一千多年后，同一片黄土地上，尧头窑的匠人烧碗、烧瓮、烧缸，为日子塑形。2006年，尧头窑陶瓷烧制技艺，列入首批国家级非物质文化遗产。从神性礼器到民生器用，从庙堂到灶间，渭南的窑火从未熄灭。",
       ],
       route: "文明非遗线",
-      asset: "assets/spots/07-yaotouyao.jpg",
+      asset: "assets/details/07-yaotouyao.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/07-yaotouyao.webp?v=20260807i",
     },
     {
@@ -117,7 +124,7 @@ window.H5_CONFIG = {
         "老街的价值，不在“仿古”，而是在给旧生活提供一个新容器。城市可以更新，记忆却不必退场；当秦腔仍有人听、面花仍有人做，皮影还有人看，乡味仍有人尝，传统不再只是过去，渭南非遗，正在从所未有的速度，重新绽放全新的芳华！",
       ],
       route: "山河东线",
-      asset: "assets/spots/08-laojie.jpg",
+      asset: "assets/details/08-laojie.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/08-laojie.webp?v=20260807i",
     },
   ],

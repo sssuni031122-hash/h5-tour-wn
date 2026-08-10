@@ -6,11 +6,44 @@
   const submitMask = document.getElementById("submitMask");
   const successModal = document.getElementById("successModal");
   const successCode = document.getElementById("successCode");
+  const viewCounter = document.getElementById("viewCounter");
+  const viewCount = document.getElementById("viewCount");
+  const privacyModal = document.getElementById("privacyModal");
+  const privacyModalConsent = document.getElementById("privacyModalConsent");
+  const privacyModalConfirm = document.getElementById("privacyModalConfirm");
   const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null, preloadedImages: [] };
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
   const allowedExtensions = /\.(jpe?g|png|webp|heic|heif)$/i;
   const maxFileSize = 10 * 1024 * 1024;
   let cloudbaseApp = null;
+  let visitRefreshTimer = null;
+
+  function renderVisitCount(count) {
+    const safeCount = Number(count);
+    if (!Number.isSafeInteger(safeCount) || safeCount < 20000) return;
+    viewCount.textContent = `${safeCount.toLocaleString("zh-CN")}+`;
+    viewCounter.hidden = false;
+  }
+
+  async function syncVisitCount(action) {
+    try {
+      const app = await ensureCloudBaseSession();
+      const response = await app.callFunction({
+        name: config.cloudbaseVisitFunction,
+        data: { action },
+      });
+      const result = response.result || response;
+      if (result.ok) renderVisitCount(result.count);
+    } catch (_) {
+      // 浏览量不是核心功能；同步失败时保持隐藏，不影响用户浏览和提交。
+    }
+  }
+
+  function startVisitCounter() {
+    syncVisitCount("record");
+    const interval = Number(config.visitRefreshInterval) || 3 * 60 * 1000;
+    visitRefreshTimer = window.setInterval(() => syncVisitCount("read"), interval);
+  }
 
   function extensionFor(file) {
     const byType = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif" };
@@ -110,25 +143,31 @@
   function renderDetail() {
     const spot = config.spots.find((item) => item.id === state.spotId) || config.spots[0];
     screen.innerHTML = `
-      <section class="screen" data-screen="detail" data-spot-id="${escapeHtml(spot.id)}">
-        <h1 class="detail-page-name">${escapeHtml(spot.name)}</h1>
-        <div class="detail-title-wrap"><div class="detail-title-card"><p>${escapeHtml(spot.story[0])}</p></div></div>
-        ${assetSlot(spot.asset, "detail-hero")}
-        <div class="content-stack"><article class="content-card"><p>${escapeHtml(spot.story[1])}</p></article></div>
-        <div class="detail-actions"><button class="primary-button" type="button" data-action="join-from-spot">我来啦！<br />我要打卡！</button></div>
+      <section class="screen spot-detail-screen" data-screen="detail" data-spot-id="${escapeHtml(spot.id)}">
+        <div class="spot-detail-design">
+          <img class="spot-detail-background" src="${escapeHtml(spot.asset)}" alt="${escapeHtml(spot.name)}" width="750" height="1890" decoding="async" fetchpriority="high" />
+          <button class="spot-detail-back" type="button" data-action="go-back" aria-label="返回上一页">
+            <img src="${escapeHtml(config.assets.detailBackButton)}" alt="返回" />
+          </button>
+          <button class="spot-detail-checkin" type="button" data-action="join-from-spot" aria-label="我来啦！我要打卡！">
+            <img src="${escapeHtml(config.assets.detailCheckinButton)}" alt="我来啦！我要打卡！" />
+          </button>
+        </div>
       </section>`;
   }
 
   function renderEntry() {
     screen.innerHTML = `
-      <section class="screen" data-screen="entry">
-        <div class="page-body">
-          <h1 class="page-title">抽大奖</h1>
-          ${assetSlot(config.assets.prize, "prize-art")}
-          <div class="choice-list">
-            <button class="choice-card" type="button" data-entry-type="photo"><span><strong>普通打卡照片</strong></span></button>
-            <button class="choice-card" type="button" data-entry-type="social_share"><span><strong>社交媒体发布截图</strong></span></button>
-          </div>
+      <section class="screen prize-screen" data-screen="entry">
+        <div class="design-canvas prize-canvas">
+          <img class="design-background" src="${escapeHtml(config.assets.prize)}" alt="抽大奖参与方式" width="1080" height="1920" decoding="async" fetchpriority="high" />
+          <button class="design-back" type="button" data-nav="home" aria-label="返回首页">返回</button>
+          <button class="prize-choice prize-choice-photo" type="button" data-entry-type="photo" aria-label="上传普通打卡照片">
+            <img src="${escapeHtml(config.assets.prizePhotoButton)}" alt="啥也不想，传个照片再说" />
+          </button>
+          <button class="prize-choice prize-choice-social" type="button" data-entry-type="social_share" aria-label="上传社交媒体发布截图">
+            <img src="${escapeHtml(config.assets.prizeSocialButton)}" alt="发布抖音、小红书或视频号截图" />
+          </button>
         </div>
       </section>`;
   }
@@ -136,33 +175,36 @@
   function renderForm() {
     if (!state.entryType) state.entryType = "photo";
     screen.innerHTML = `
-      <section class="screen" data-screen="form">
-        <div class="page-body">
-          <h1 class="page-title">抽大奖</h1>
-          ${assetSlot(config.assets.form, "form-art")}
+      <section class="screen form-screen" data-screen="form">
+        <div class="design-canvas form-canvas">
+          <img class="design-background" src="${escapeHtml(config.assets.form)}" alt="抽大奖资料提交表单" width="1080" height="1920" decoding="async" fetchpriority="high" />
+          <button class="design-back" type="button" data-nav="entry" aria-label="返回参与方式">返回</button>
           <div class="status-banner" id="statusBanner" role="alert"></div>
-          <form class="form-card" id="submissionForm" novalidate>
+          <form class="design-form" id="submissionForm" novalidate>
             <input type="hidden" name="entryType" value="${escapeHtml(state.entryType)}" />
-            <div class="form-group upload-first">
-              <label class="upload-zone" id="uploadZone" for="photo"><span class="upload-icon">+</span><span class="upload-copy"><strong id="fileName">点击上传图片</strong><small id="fileMeta"></small></span></label>
+            <div class="design-upload-wrap">
+              <label class="design-upload" id="uploadZone" for="photo"><span class="design-upload-selected"><strong id="fileName">点击上传图片</strong><small id="fileMeta"></small></span></label>
               <input class="visually-hidden" id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" />
               <p class="field-error" data-error-for="photo"></p>
             </div>
-            <div class="form-group"><label class="field-label" for="name">您的姓名</label><input id="name" name="name" type="text" maxlength="30" autocomplete="name" /><p class="field-error" data-error-for="name"></p></div>
-            <div class="form-group"><label class="field-label" for="phone">联系电话</label><input id="phone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" /><p class="field-error" data-error-for="phone"></p></div>
-            <div class="form-group consent-group">
+            <div class="design-field design-field-name"><label class="visually-hidden" for="name">您的姓名</label><input id="name" name="name" type="text" maxlength="30" autocomplete="name" aria-label="您的姓名" /><p class="field-error" data-error-for="name"></p></div>
+            <div class="design-field design-field-phone"><label class="visually-hidden" for="phone">联系电话</label><input id="phone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" aria-label="联系电话" /><p class="field-error" data-error-for="phone"></p></div>
+            <div class="design-consent">
               <label class="consent-row" for="consent">
                 <input id="consent" name="consent" type="checkbox" required />
-                <span>我已阅读并同意主办方为本次活动报名、作品收集与审核、抽奖及获奖联系之目的，收集和处理本人提交的姓名、手机号及图片资料。</span>
+                <span>我同意收集姓名、手机号及图片，用于活动审核、抽奖与联系。</span>
               </label>
               <p class="field-error" data-error-for="consent"></p>
             </div>
-            <button class="primary-button submit-button" id="submitButton" type="submit">抽大奖</button>
+            <button class="design-submit" id="submitButton" type="submit" aria-label="提交资料">
+              <img src="${escapeHtml(config.assets.formSubmitButton)}" alt="提交" />
+            </button>
           </form>
         </div>
       </section>`;
     document.getElementById("photo").addEventListener("change", handleFileChange);
     document.getElementById("submissionForm").addEventListener("submit", handleSubmit);
+    document.getElementById("consent").addEventListener("click", handleConsentAttempt);
   }
 
   function renderSuccess(code) {
@@ -170,6 +212,8 @@
   }
 
   function render() {
+    closeSuccessModal();
+    closePrivacyModal();
     if (state.route === "overview") renderOverview();
     else if (state.route === "detail") renderDetail();
     else if (state.route === "entry") renderEntry();
@@ -277,6 +321,7 @@
           phone: form.elements.phone.value.trim(),
           entryType: form.elements.entryType.value,
           consent: form.elements.consent.checked,
+          consentVersion: "2026-08-10-v2",
           photoFileId: uploadedFileId,
           photoName: state.selectedFile.name,
           photoType: state.selectedFile.type,
@@ -306,6 +351,27 @@
     successModal.setAttribute("aria-hidden", "true");
   }
 
+  function openPrivacyModal() {
+    privacyModalConsent.checked = false;
+    privacyModalConfirm.disabled = true;
+    privacyModal.classList.add("show");
+    privacyModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    document.getElementById("privacyModalClose").focus();
+  }
+
+  function closePrivacyModal() {
+    privacyModal.classList.remove("show");
+    privacyModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  }
+
+  function handleConsentAttempt(event) {
+    if (!event.currentTarget.checked) return;
+    event.preventDefault();
+    openPrivacyModal();
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -333,6 +399,7 @@
     if (!target) return;
     if (target.dataset.nav) return navigate(target.dataset.nav);
     if (target.dataset.spot) return navigate("detail", target.dataset.spot);
+    if (target.dataset.action === "go-back") return history.back();
     if (target.dataset.action === "join-from-spot") return navigate("entry");
     if (target.dataset.entryType) { state.entryType = target.dataset.entryType; state.selectedFile = null; return navigate("form"); }
   });
@@ -346,9 +413,30 @@
     navigate("home");
   });
 
+  privacyModalConsent.addEventListener("change", () => {
+    privacyModalConfirm.disabled = !privacyModalConsent.checked;
+  });
+  document.getElementById("privacyModalClose").addEventListener("click", closePrivacyModal);
+  document.getElementById("privacyModalCancel").addEventListener("click", closePrivacyModal);
+  privacyModalConfirm.addEventListener("click", () => {
+    if (!privacyModalConsent.checked) return;
+    const pageConsent = document.getElementById("consent");
+    if (pageConsent) pageConsent.checked = true;
+    setFieldError("consent", "");
+    closePrivacyModal();
+    pageConsent?.focus();
+  });
+  privacyModal.addEventListener("click", (event) => {
+    if (event.target === privacyModal) closePrivacyModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && privacyModal.classList.contains("show")) closePrivacyModal();
+  });
+
   window.addEventListener("hashchange", () => { routeFromHash(); window.scrollTo(0, 0); render(); });
   routeFromHash();
   render();
   scheduleOverviewPreload();
+  startVisitCounter();
   requestAnimationFrame(() => document.getElementById("loadingScreen").classList.add("hide"));
 })();
