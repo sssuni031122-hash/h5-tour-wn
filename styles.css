@@ -72,18 +72,9 @@ button {
   position: relative;
   width: 100%;
   max-width: 760px;
-  min-height: 100dvh;
+  min-height: 0;
   margin: 0 auto;
-  background-color: #ffa17f;
-  background-image:
-    radial-gradient(ellipse at 83% 82%, rgba(255, 244, 210, 0.76) 0 8%, transparent 8.6%),
-    radial-gradient(ellipse at 72% 88%, rgba(255, 244, 210, 0.48) 0 10%, transparent 10.7%),
-    radial-gradient(ellipse at 94% 91%, rgba(255, 244, 210, 0.36) 0 7%, transparent 7.7%),
-    linear-gradient(145deg, transparent 0 67%, rgba(255, 133, 57, 0.62) 67.5% 69%, transparent 69.5%),
-    linear-gradient(154deg, transparent 0 73%, rgba(255, 201, 93, 0.5) 73.5% 75%, transparent 75.5%);
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100% 260px;
+  background: transparent;
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
@@ -1657,14 +1648,18 @@ noscript {
 .design-canvas {
   position: relative;
   width: 100%;
+  aspect-ratio: 9 / 16;
   line-height: 0;
   overflow: hidden;
 }
 
 .design-background {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .design-back {
