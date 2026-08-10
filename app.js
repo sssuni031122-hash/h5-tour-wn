@@ -15,7 +15,6 @@
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
   const allowedExtensions = /\.(jpe?g|png|webp|heic|heif)$/i;
   const maxFileSize = 10 * 1024 * 1024;
-  let cloudbaseApp = null;
   let visitRefreshTimer = null;
 
   function renderVisitCount(count) {
@@ -25,15 +24,22 @@
     viewCounter.hidden = false;
   }
 
+  async function fetchJson(url, options) {
+    const response = await fetch(url, options);
+    let payload = null;
+    try { payload = await response.json(); } catch (_) {}
+    if (!response.ok) throw new Error(payload?.error || "请求失败，请稍后重试");
+    return payload;
+  }
+
   async function syncVisitCount(action) {
     try {
-      const app = await ensureCloudBaseSession();
-      const response = await app.callFunction({
-        name: config.cloudbaseVisitFunction,
-        data: { action },
+      const payload = await fetchJson(`${config.apiBase}${config.visitPath}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
       });
-      const result = response.result || response;
-      if (result.ok) renderVisitCount(result.count);
+      if (payload.ok) renderVisitCount(payload.count);
     } catch (_) {
       // 浏览量不是核心功能；同步失败时保持隐藏，不影响用户浏览和提交。
     }
@@ -48,15 +54,6 @@
   function extensionFor(file) {
     const byType = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif" };
     return byType[file.type] || file.name.split(".").pop()?.toLowerCase() || "bin";
-  }
-
-  async function ensureCloudBaseSession() {
-    if (!window.cloudbase) throw new Error("数据服务加载失败，请刷新页面后重试");
-    if (!cloudbaseApp) cloudbaseApp = window.cloudbase.init({ env: config.cloudbaseEnvId });
-    const auth = cloudbaseApp.auth({ persistence: "local" });
-    const state = typeof auth.getLoginState === "function" ? await auth.getLoginState() : null;
-    if (!state) await auth.signInAnonymously();
-    return cloudbaseApp;
   }
 
   function escapeHtml(value) {
@@ -321,35 +318,47 @@
       if (testMode === "success") return { code: "WN-20260807-TEST0001" };
       throw new Error("抽大奖");
     }
-    const app = await ensureCloudBaseSession();
+    const apiBase = config.apiBase;
     const id = crypto.randomUUID();
     const day = new Date().toISOString().slice(0, 10);
     const cloudPath = `submissions-temp/${day}/${id}/photo.${extensionFor(state.selectedFile)}`;
-    let uploadedFileId = "";
     try {
-      const upload = await app.uploadFile({ cloudPath, filePath: state.selectedFile });
-      uploadedFileId = upload.fileID;
-      const response = await app.callFunction({
-        name: config.cloudbaseSubmitFunction,
-        data: {
+      const tokenRes = await fetchJson(`${apiBase}${config.uploadTokenPath}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cloudPath }),
+      });
+      const meta = tokenRes.data;
+      if (!tokenRes.ok || !meta?.url) throw new Error("获取上传凭证失败，请稍后重试");
+      const uploadRes = await fetch(meta.url, {
+        method: "PUT",
+        headers: {
+          Authorization: meta.authorization,
+          "x-cos-security-token": meta.token,
+          "x-cos-meta-fileid": meta.cosFileId,
+          "Content-Type": state.selectedFile.type || "application/octet-stream",
+        },
+        body: state.selectedFile,
+      });
+      if (!uploadRes.ok) throw new Error("图片上传失败，请稍后重试");
+      const submitRes = await fetchJson(`${apiBase}${config.submitPath}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: form.elements.name.value.trim(),
           phone: form.elements.phone.value.trim(),
           entryType: form.elements.entryType.value,
           consent: form.elements.consent.checked,
           consentVersion: "2026-08-10-v2",
-          photoFileId: uploadedFileId,
+          photoFileId: meta.fileId,
           photoName: state.selectedFile.name,
           photoType: state.selectedFile.type,
           photoSize: state.selectedFile.size,
-        },
+        }),
       });
-      const result = response.result || response;
-      if (!result.ok || !result.code) throw new Error(result.error || "提交失败，请稍后重试");
-      return result;
+      if (!submitRes.ok || !submitRes.code) throw new Error(submitRes.error || "提交失败，请稍后重试");
+      return submitRes;
     } catch (error) {
-      if (uploadedFileId) {
-        try { await app.deleteFile({ fileList: [uploadedFileId] }); } catch (_) {}
-      }
       throw error;
     }
   }
