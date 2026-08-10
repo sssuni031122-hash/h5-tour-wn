@@ -11,7 +11,7 @@
   const privacyModal = document.getElementById("privacyModal");
   const privacyModalConsent = document.getElementById("privacyModalConsent");
   const privacyModalConfirm = document.getElementById("privacyModalConfirm");
-  const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null, preloadedImages: [] };
+  const state = { route: "home", spotId: null, entryType: null, selectedFile: null, transitionTimer: null, preloadedImages: [], preloadedSources: new Set() };
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
   const allowedExtensions = /\.(jpe?g|png|webp|heic|heif)$/i;
   const maxFileSize = 10 * 1024 * 1024;
@@ -84,15 +84,28 @@
     });
   }
 
-  function preloadOverviewAssets() {
-    const sources = [config.assets.overview, ...config.spots.map((spot) => spot.buttonAsset)].filter(Boolean);
+  function preloadImages(sources, priority = "low") {
     sources.forEach((src) => {
+      if (!src || state.preloadedSources.has(src)) return;
+      state.preloadedSources.add(src);
       const image = new Image();
       image.decoding = "async";
-      image.fetchPriority = "low";
+      image.fetchPriority = priority;
       image.src = src;
       state.preloadedImages.push(image);
     });
+  }
+
+  function preloadOverviewAssets() {
+    preloadImages([config.assets.overview, ...config.spots.map((spot) => spot.buttonAsset)].filter(Boolean));
+  }
+
+  function preloadDetailAssets() {
+    preloadImages([
+      ...config.spots.map((spot) => spot.asset),
+      config.assets.detailBackButton,
+      config.assets.detailCheckinButton,
+    ].filter(Boolean), "high");
   }
 
   function scheduleOverviewPreload() {
@@ -138,6 +151,8 @@
           </div>
         </div>
       </section>`;
+    // 用户停留在总览页时就在后台缓存8个详情页，避免点击后才开始下载。
+    preloadDetailAssets();
   }
 
   function renderDetail() {
