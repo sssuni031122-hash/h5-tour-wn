@@ -20,8 +20,8 @@
 
   function renderVisitCount(count) {
     const safeCount = Number(count);
-    if (!Number.isSafeInteger(safeCount) || safeCount < 20000) return;
-    viewCount.textContent = `${safeCount.toLocaleString("zh-CN")}+`;
+    if (!Number.isSafeInteger(safeCount) || safeCount < 0) return;
+    viewCount.textContent = safeCount.toLocaleString("zh-CN");
     viewCounter.hidden = false;
   }
 
