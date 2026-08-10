@@ -2,6 +2,10 @@ window.H5_CONFIG = {
   cloudbaseEnvId: "weinan-h5-2026-d7g0bsxva8f547fe5",
   cloudbaseSubmitFunction: "submitActivity",
   cloudbaseVisitFunction: "recordVisit",
+  apiBase: "https://weinan-h5-2026-d7g0bsxva8f547fe5-1427680283.ap-shanghai.app.tcloudbase.com",
+  uploadTokenPath: "/api/upload-token",
+  submitPath: "/api/submit",
+  visitPath: "/api/visit",
   visitRefreshInterval: 3 * 60 * 1000,
   activity: {
     title: "6000年渭南一朵 Hua",
