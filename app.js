@@ -188,8 +188,8 @@
 
   function getGalleryItems() {
     const photos = Array.isArray(config.galleryPhotos) ? config.galleryPhotos.filter(Boolean) : [];
-    if (photos.length) return photos.map((src) => ({ src }));
-    return Array.from({ length: 30 }, () => ({ src: "" }));
+    const slotCount = Math.max(30, photos.length);
+    return Array.from({ length: slotCount }, (_, index) => ({ src: photos[index] || "" }));
   }
 
   function openGallery() {

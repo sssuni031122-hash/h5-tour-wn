@@ -8,7 +8,19 @@ window.H5_CONFIG = {
   visitPath: "/api/visit",
   visitRefreshInterval: 12 * 1000,
   // 示例照片可持续追加，前端不设数量上限。例如：["assets/gallery/001.webp", "assets/gallery/002.webp"]
-  galleryPhotos: [],
+  galleryPhotos: [
+    "assets/gallery/001.jpg",
+    "assets/gallery/002.jpg",
+    "assets/gallery/003.jpg",
+    "assets/gallery/004.jpg",
+    "assets/gallery/005.jpg",
+    "assets/gallery/006.jpg",
+    "assets/gallery/007.jpg",
+    "assets/gallery/008.jpg",
+    "assets/gallery/009.jpg",
+    "assets/gallery/010.jpg",
+    "assets/gallery/011.jpg",
+  ],
   activity: {
     title: "6000年渭南一朵 Hua",
     subtitle: "循着一朵花，读懂渭南与华夏文明",
