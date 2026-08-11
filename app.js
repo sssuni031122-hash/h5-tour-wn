@@ -122,14 +122,6 @@
     else window.setTimeout(run, 1200);
   }
 
-  function scheduleGalleryPreload() {
-    const photos = Array.isArray(config.galleryPhotos) ? config.galleryPhotos.filter(Boolean) : [];
-    if (!photos.length) return;
-    const run = () => preloadImages(photos, "low");
-    if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 650 });
-    else window.setTimeout(run, 300);
-  }
-
   function scheduleOverviewPreload() {
     const run = () => preloadOverviewAssets();
     if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 900 });
@@ -190,15 +182,14 @@
           </div>
         </div>
       </section>`;
-    // 主画面完成后先缓存照片墙，再低优先级缓存详情页。
-    scheduleGalleryPreload();
+    // 先完成总览页绘制，再利用空闲时间低优先级缓存详情页。
     scheduleDetailPreload();
   }
 
   function getGalleryItems() {
     const photos = Array.isArray(config.galleryPhotos) ? config.galleryPhotos.filter(Boolean) : [];
-    const slotCount = Math.max(30, photos.length);
-    return Array.from({ length: slotCount }, (_, index) => ({ src: photos[index] || "" }));
+    if (photos.length) return photos.map((src) => ({ src }));
+    return Array.from({ length: 30 }, () => ({ src: "" }));
   }
 
   function openGallery() {
@@ -424,7 +415,11 @@
       var timer = setInterval(function () {
         attempts++;
         if (window.WeixinJSBridge) { clearInterval(timer); callOpenLocation(); }
-        else if (attempts >= 20) { clearInterval(timer); showToast("微信地图加载失败，请检查网络"); }
+        else if (attempts >= 20) {
+          clearInterval(timer);
+          var fallbackUrl = "https://apis.map.qq.com/uri/v1/marker?marker=coord:" + lat + "," + lng + ";title:" + encodeURIComponent(locName) + "&referer=h5-tour-wn";
+          window.location.href = fallbackUrl;
+        }
       }, 100);
     }
   }
