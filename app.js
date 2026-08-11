@@ -384,9 +384,22 @@
     var lng = Number(nav.longitude);
     var name = nav.name || spot.name || "";
     var addr = nav.address || "陕西省渭南市";
-    var scale = Number(nav.scale) || 16;
+    var scale = Number(nav.scale) || 14;
 
-    /* 方案 1：WeixinJSBridge（微信 WebView 原生注入） */
+    /* 优先使用 wx.openLocation（参考 wnnew.sxtvs.com 成功方案） */
+    if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
+      wx.openLocation({
+        latitude: lat,
+        longitude: lng,
+        name: name,
+        address: addr,
+        scale: scale,
+        infoUrl: ""
+      });
+      return;
+    }
+
+    /* 降级：WeixinJSBridge（旧版微信） */
     if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
       try {
         window.WeixinJSBridge.invoke("openLocation", {
@@ -403,33 +416,21 @@
       } catch (e) { /* fall through */ }
     }
 
-    /* 方案 2：wx 对象（jweixin SDK） */
-    if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-      try {
-        wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
-        return;
-      } catch (e) { /* fall through */ }
-    }
-
-    /* 方案 3：等待 Bridge 就绪后重试一次 */
+    /* 最终兜底：等待 wx SDK 加载 */
     var attempts = 0;
     var retry = setInterval(function () {
       attempts++;
-      if ((window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") ||
-          (typeof wx !== "undefined" && typeof wx.openLocation === "function")) {
+      if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
         clearInterval(retry);
-        try {
-          if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
-            window.WeixinJSBridge.invoke("openLocation", { latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
-          } else if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-            wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
-          }
-        } catch (e) { showToast("微信地图加载失败，请返回重试"); }
-      } else if (attempts >= 20) {
+        wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale, infoUrl: "" });
+      } else if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+        clearInterval(retry);
+        window.WeixinJSBridge.invoke("openLocation", { latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
+      } else if (attempts >= 15) {
         clearInterval(retry);
         showToast("微信地图加载失败，请检查网络后重试");
       }
-    }, 150);
+    }, 200);
   }
 
   function setFieldError(name, message) {
