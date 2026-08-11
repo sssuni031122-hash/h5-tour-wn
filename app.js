@@ -102,7 +102,13 @@
       ...config.spots.map((spot) => spot.asset),
       config.assets.detailBackButton,
       config.assets.detailCheckinButton,
-    ].filter(Boolean), "high");
+    ].filter(Boolean), "low");
+  }
+
+  function scheduleDetailPreload() {
+    const run = () => preloadDetailAssets();
+    if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1800 });
+    else window.setTimeout(run, 1200);
   }
 
   function scheduleOverviewPreload() {
@@ -128,7 +134,6 @@
   function renderOverview() {
     const overviewOrder = ["huashan", "cangjiemiao", "qiachuan", "hancheng", "fengtuyicang", "tongguan", "yaotouyao", "laojie"];
     const overviewSpots = overviewOrder.map((id) => config.spots.find((spot) => spot.id === id));
-    const galleryItems = getGalleryItems();
     screen.innerHTML = `
       <section class="screen" data-screen="overview">
         <div class="p2-design">
@@ -157,9 +162,7 @@
             <div class="p2-gallery-dialog" role="dialog" aria-modal="true" aria-labelledby="p2GalleryTitle">
               <button class="p2-gallery-close" type="button" data-action="close-gallery" aria-label="关闭照片页面">×</button>
               <h2 id="p2GalleryTitle">来看看大家怎么拍</h2>
-              <div class="p2-gallery-list">
-                ${galleryItems.map((item, index) => `<button class="p2-gallery-photo${item.src ? "" : " p2-gallery-photo-placeholder"}" type="button" data-gallery-photo="${index}" aria-label="放大查看示例照片 ${index + 1}">${item.src ? `<img src="${escapeHtml(item.src)}" alt="示例照片 ${index + 1}" loading="lazy" decoding="async" />` : `<span>示例照片 ${index + 1}</span>`}</button>`).join("")}
-              </div>
+              <div class="p2-gallery-list" id="p2GalleryList"></div>
             </div>
             <div class="p2-photo-lightbox" id="p2PhotoLightbox" aria-hidden="true">
               <button class="p2-photo-lightbox-close" type="button" data-action="close-photo" aria-label="关闭大图">×</button>
@@ -168,8 +171,8 @@
           </div>
         </div>
       </section>`;
-    // 用户停留在总览页时就在后台缓存8个详情页，避免点击后才开始下载。
-    preloadDetailAssets();
+    // 先完成总览页绘制，再利用空闲时间低优先级缓存详情页。
+    scheduleDetailPreload();
   }
 
   function getGalleryItems() {
@@ -180,7 +183,12 @@
 
   function openGallery() {
     const modal = document.getElementById("p2GalleryModal");
+    const list = document.getElementById("p2GalleryList");
     if (!modal) return;
+    if (list && !list.childElementCount) {
+      const galleryItems = getGalleryItems();
+      list.innerHTML = galleryItems.map((item, index) => `<button class="p2-gallery-photo${item.src ? "" : " p2-gallery-photo-placeholder"}" type="button" data-gallery-photo="${index}" aria-label="放大查看示例照片 ${index + 1}">${item.src ? `<img src="${escapeHtml(item.src)}" alt="示例照片 ${index + 1}" loading="lazy" decoding="async" />` : `<span>示例照片 ${index + 1}</span>`}</button>`).join("");
+    }
     modal.classList.add("show");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");

@@ -1645,7 +1645,7 @@ noscript {
   color: #ae1e16;
   background: rgba(255, 250, 226, 0.94);
   box-shadow: 0 5px 14px rgba(136, 48, 24, 0.22);
-  font-size: clamp(14px, 3.8vw, 25px);
+  font-size: clamp(11px, 3vw, 19px);
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
