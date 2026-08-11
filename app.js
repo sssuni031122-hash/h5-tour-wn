@@ -380,13 +380,17 @@
     var locName = nav.name || spot.name || "";
     var locAddr = nav.address || "陕西省渭南市";
 
+    /* 腾讯地图 URI 跳转（无需 JS-SDK 签名，微信内可直接打开地图并导航） */
+    var mapUrl = "https://apis.map.qq.com/uri/v1/marker?marker=coord:" + lat + "," + lng + ";title:" + encodeURIComponent(locName) + "&referer=h5-tour-wn";
+
+    function openTencentMap() {
+      window.location.href = mapUrl;
+    }
+
+    /* 首选：微信原生 openLocation（老版桥接，无需签名） */
     function callOpenLocation() {
       if (!window.WeixinJSBridge || typeof window.WeixinJSBridge.invoke !== "function") {
-        if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-          wx.openLocation({ latitude: lat, longitude: lng, name: locName, address: locAddr, scale: 14, infoUrl: "" });
-        } else {
-          showToast("微信地图加载失败，请返回重试");
-        }
+        openTencentMap();
         return;
       }
       WeixinJSBridge.invoke("openLocation", {
@@ -398,11 +402,7 @@
       }, function (res) {
         var msg = res && res.err_msg ? res.err_msg : "";
         if (msg.indexOf(":ok") === -1) {
-          if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-            wx.openLocation({ latitude: lat, longitude: lng, name: locName, address: locAddr, scale: 14, infoUrl: "" });
-          } else {
-            showToast("未能打开微信地图，请稍后重试");
-          }
+          openTencentMap();
         }
       });
     }
@@ -417,8 +417,7 @@
         if (window.WeixinJSBridge) { clearInterval(timer); callOpenLocation(); }
         else if (attempts >= 20) {
           clearInterval(timer);
-          var fallbackUrl = "https://apis.map.qq.com/uri/v1/marker?marker=coord:" + lat + "," + lng + ";title:" + encodeURIComponent(locName) + "&referer=h5-tour-wn";
-          window.location.href = fallbackUrl;
+          openTencentMap();
         }
       }, 100);
     }
