@@ -17,14 +17,21 @@
   const maxFileSize = 10 * 1024 * 1024;
   let visitRefreshTimer = null;
 
-  /* ── 微信 WeixinJSBridge 就绪检测 ── */
-  let wechatBridgeReady = false;
+  /* ── 微信 Bridge 就绪检测 ── */
+  var wechatBridgeReady = false;
   if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
     wechatBridgeReady = true;
   }
-  document.addEventListener("WeixinJSBridgeReady", function onBridgeReady() {
-    wechatBridgeReady = true;
-  });
+  /* 监听事件（虽然通常已触发，但部分内嵌场景会二次派发） */
+  if (typeof document !== "undefined") {
+    document.addEventListener("WeixinJSBridgeReady", function () {
+      wechatBridgeReady = true;
+    });
+  }
+  /* jweixin SDK 加载完成后也会触发 */
+  if (typeof wx !== "undefined" && typeof wx.ready === "function") {
+    wx.ready(function () { wechatBridgeReady = true; });
+  }
 
   function renderVisitCount(count) {
     const safeCount = Number(count);
@@ -243,7 +250,7 @@
           <button class="spot-detail-back" type="button" data-action="go-back" aria-label="返回上一页">
             <img src="${escapeHtml(config.assets.detailBackButton)}" alt="返回" />
           </button>
-          <button class="spot-detail-navigation" type="button" data-action="open-location" aria-label="在微信地图中查看${escapeHtml(spot.name)}">
+          <button class="spot-detail-navigation" type="button" aria-label="在微信地图中查看${escapeHtml(spot.name)}">
             <span class="spot-detail-navigation-icon" aria-hidden="true">➤</span><span>导航</span>
           </button>
           <button class="spot-detail-checkin" type="button" data-action="join-from-spot" aria-label="我来啦！我要打卡！">
@@ -251,6 +258,21 @@
           </button>
         </div>
       </section>`;
+
+    /* 直接绑定导航按钮点击事件（绕过事件委托，确保微信内可靠触发） */
+    var navBtn = screen.querySelector(".spot-detail-navigation");
+    if (navBtn) {
+      navBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        invokeWechatLocation(spot);
+      });
+      /* 微信内 touch 事件兜底 */
+      navBtn.addEventListener("touchend", function (e) {
+        e.preventDefault();
+        invokeWechatLocation(spot);
+      });
+    }
   }
 
   function renderEntry() {
@@ -351,66 +373,63 @@
   }
 
   function invokeWechatLocation(spot) {
-    const navigation = spot?.navigation;
-    if (!navigation || !Number.isFinite(navigation.longitude) || !Number.isFinite(navigation.latitude)) {
+    var nav = spot && spot.navigation;
+    if (!nav || !isFinite(nav.longitude) || !isFinite(nav.latitude)) {
       showToast("该景点坐标暂未配置");
       return;
     }
     if (!/MicroMessenger/i.test(navigator.userAgent)) return showToast("请在微信内打开页面使用导航");
 
-    var nav = navigation;
-    function doOpenLocation() {
-      if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+    var lat = Number(nav.latitude);
+    var lng = Number(nav.longitude);
+    var name = nav.name || spot.name || "";
+    var addr = nav.address || "陕西省渭南市";
+    var scale = Number(nav.scale) || 16;
+
+    /* 方案 1：WeixinJSBridge（微信 WebView 原生注入） */
+    if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+      try {
         window.WeixinJSBridge.invoke("openLocation", {
-          latitude: nav.latitude,
-          longitude: nav.longitude,
-          name: nav.name || spot.name,
-          address: nav.address || "陕西省渭南市",
-          scale: nav.scale || 16,
-          infoUrl: window.location.href
+          latitude: lat,
+          longitude: lng,
+          name: name,
+          address: addr,
+          scale: scale
         }, function (res) {
           var msg = res && res.err_msg ? res.err_msg : "";
           if (msg.indexOf(":ok") === -1) showToast("未能打开微信地图，请稍后重试");
         });
         return;
-      }
-      if (window.wx && typeof window.wx.openLocation === "function") {
-        window.wx.openLocation({
-          latitude: nav.latitude,
-          longitude: nav.longitude,
-          name: nav.name || spot.name,
-          address: nav.address || "陕西省渭南市",
-          scale: nav.scale || 16,
-          infoUrl: window.location.href
-        });
-        return;
-      }
-      showToast("微信地图加载失败，请返回重试");
+      } catch (e) { /* fall through */ }
     }
 
-    if (wechatBridgeReady) return doOpenLocation();
+    /* 方案 2：wx 对象（jweixin SDK） */
+    if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
+      try {
+        wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
+        return;
+      } catch (e) { /* fall through */ }
+    }
 
-    var waited = 0;
-    var MAX_WAIT = 3000;
-    var INTERVAL = 80;
-    var pollTimer = setInterval(function () {
-      waited += INTERVAL;
-      if (wechatBridgeReady || (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function")) {
-        wechatBridgeReady = true;
-        clearInterval(pollTimer);
-        doOpenLocation();
-      } else if (waited >= MAX_WAIT) {
-        clearInterval(pollTimer);
-        if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
-          wechatBridgeReady = true;
-          doOpenLocation();
-        } else if (window.wx && typeof window.wx.openLocation === "function") {
-          doOpenLocation();
-        } else {
-          showToast("微信地图加载失败，请检查网络后重试");
-        }
+    /* 方案 3：等待 Bridge 就绪后重试一次 */
+    var attempts = 0;
+    var retry = setInterval(function () {
+      attempts++;
+      if ((window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") ||
+          (typeof wx !== "undefined" && typeof wx.openLocation === "function")) {
+        clearInterval(retry);
+        try {
+          if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+            window.WeixinJSBridge.invoke("openLocation", { latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
+          } else if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
+            wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
+          }
+        } catch (e) { showToast("微信地图加载失败，请返回重试"); }
+      } else if (attempts >= 20) {
+        clearInterval(retry);
+        showToast("微信地图加载失败，请检查网络后重试");
       }
-    }, INTERVAL);
+    }, 150);
   }
 
   function setFieldError(name, message) {
