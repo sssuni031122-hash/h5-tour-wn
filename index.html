@@ -1,117 +1,238 @@
 <!doctype html>
+
 <html lang="zh-CN">
+
   <head>
+
     <meta charset="UTF-8" />
+
     <meta
+
       name="viewport"
+
       content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"
+
     />
+
     <meta name="theme-color" content="#f3f1ec" />
+
     <meta name="description" content="循着一朵花，读懂渭南与华夏文明；游览渭南文旅打卡点，参与城市打卡活动。" />
 
+
+
     <meta property="og:type" content="website" />
+
     <meta property="og:locale" content="zh_CN" />
+
     <meta property="og:site_name" content="6000年渭南一朵Hua" />
+
     <meta property="og:title" content="6000年渭南一朵Hua" />
+
     <meta property="og:description" content="循着一朵花，读懂渭南与华夏文明；游览渭南文旅打卡点，参与城市打卡活动。" />
+
     <meta property="og:url" content="https://h5.socialmedia-fanchi.com/" />
+
     <meta property="og:image" content="https://h5.socialmedia-fanchi.com/assets/pages/share-card.jpg" />
+
     <meta property="og:image:secure_url" content="https://h5.socialmedia-fanchi.com/assets/pages/share-card.jpg" />
+
     <meta property="og:image:type" content="image/jpeg" />
+
     <meta property="og:image:width" content="1200" />
+
     <meta property="og:image:height" content="630" />
+
     <meta property="og:image:alt" content="6000年渭南一朵Hua活动封面" />
 
+    <meta itemprop="name" content="6000年渭南一朵Hua" />
+    <meta itemprop="description" content="循着一朵花，读懂渭南与华夏文明；游览渭南文旅打卡点，参与城市打卡活动。" />
+    <meta itemprop="image" content="https://h5.socialmedia-fanchi.com/assets/pages/share-card.jpg" />
+
+
+
     <meta name="twitter:card" content="summary_large_image" />
+
     <meta name="twitter:title" content="6000年渭南一朵Hua" />
+
     <meta name="twitter:description" content="循着一朵花，读懂渭南与华夏文明；游览渭南文旅打卡点，参与城市打卡活动。" />
+
     <meta name="twitter:image" content="https://h5.socialmedia-fanchi.com/assets/pages/share-card.jpg" />
 
+
+
     <title>6000年渭南一朵Hua</title>
+
     <link rel="canonical" href="https://h5.socialmedia-fanchi.com/" />
+
     <link rel="image_src" href="https://h5.socialmedia-fanchi.com/assets/pages/p1-home.jpg" />
+
     <link rel="preload" as="image" href="assets/pages/p1-home.webp?v=20260807i" fetchpriority="high" />
+
     <link rel="preload" as="image" href="assets/pages/p1-button-tour.webp?v=20260807i" />
+
     <link rel="preload" as="image" href="assets/pages/p1-button-prize.webp?v=20260807i" />
+
     <link rel="stylesheet" href="styles.css?v=20260810l" />
+
   </head>
+
   <body>
+
     <div class="app-shell" id="app">
+
       <div class="loading-screen" id="loadingScreen" aria-live="polite">
+
         <span class="spinner" aria-hidden="true"></span>
+
       </div>
+
+
 
       <main id="screen" tabindex="-1"></main>
 
+
+
       <div class="view-counter" id="viewCounter" role="status" aria-live="polite">
+
         <span id="viewCount">20,000</span>
+
         <small>次浏览</small>
+
       </div>
+
+
 
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+
+
       <div class="submit-mask" id="submitMask" aria-hidden="true">
+
         <div class="submit-mask-card" role="status">
+
           <span class="spinner" aria-hidden="true"></span>
+
         </div>
+
       </div>
+
+
 
       <div class="success-modal" id="successModal" aria-hidden="true">
+
         <div class="success-modal-card" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
+
           <span class="success-mark" aria-hidden="true">✓</span>
+
           <h2 id="successModalTitle">提交成功</h2>
+
           <p>感谢参与，本次提交编号为：</p>
+
           <strong class="success-code" id="successCode"></strong>
+
           <div class="success-modal-actions">
+
             <button class="primary-button" id="continueSubmit" type="button">继续上传</button>
+
             <button class="secondary-button" id="returnHome" type="button">返回首页</button>
+
           </div>
+
         </div>
+
       </div>
+
+
 
       <div class="privacy-modal" id="privacyModal" aria-hidden="true">
+
         <div class="privacy-modal-card" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
+
           <div class="privacy-modal-header">
+
             <h2 id="privacyModalTitle">个人信息处理告知书</h2>
+
             <button class="privacy-modal-close" id="privacyModalClose" type="button" aria-label="关闭告知书">×</button>
+
           </div>
+
           <div class="privacy-modal-content" tabindex="0">
+
             <p>更新日期：2026年8月10日</p>
+
             <p>根据《中华人民共和国个人信息保护法》等相关规定，请您在提交前仔细阅读以下内容。</p>
+
             <h3>一、个人信息处理者</h3>
+
             <p>处理者：渭南鼎春三合广告装饰有限公司</p>
+
             <p>联系邮箱：<a href="mailto:buzzlightyear@wholovestiktok.com">buzzlightyear@wholovestiktok.com</a></p>
+
             <h3>二、处理目的</h3>
+
             <p>用于本次活动报名、作品收集与审核、参与及抽奖资格核验、抽奖管理、获奖通知、兑奖联系、活动咨询和争议处理，不用于与本次活动无关的营销。</p>
+
             <h3>三、收集的信息</h3>
+
             <p>我们将收集您主动填写或上传的姓名、手机号码、打卡照片或社交媒体发布截图，以及系统生成的提交时间、提交编号和处理状态。</p>
+
             <p>请勿上传与活动无关的信息；截图中如含他人姓名、头像、账号等内容，请在上传前自行遮挡。未满14周岁的未成年人应由监护人阅读本告知书并代为参与。</p>
+
             <h3>四、处理方式与存储</h3>
+
             <p>上述信息将通过本页面收集，并在本次活动使用的腾讯云 CloudBase 数据库和云存储中进行存储、查询、审核、导出及删除。仅限获得授权的活动工作人员在履行工作职责所必需的范围内访问。</p>
+
             <h3>五、提供与公开</h3>
+
             <p>除取得您的另行同意、为履行法定义务、依法配合有关部门，或由受托技术服务商按照我们的指示提供必要的存储和安全服务外，我们不会向其他第三方提供您的个人信息。</p>
+
             <p>未取得您的另行同意前，姓名、手机号码及提交图片不会向公众公开。取得公开展示授权后，仅在授权范围和期限内展示相关图片。</p>
+
             <h3>六、保存期限</h3>
+
             <p>相关个人信息将在活动结束后90日内删除或匿名化处理；法律、行政法规另有规定，或者处理投诉、争议所确有必要的，按照适用规定在必要期限内保存，期限届满后删除或匿名化处理。</p>
+
             <h3>七、您的权利</h3>
+
             <p>您可以通过上述联系邮箱申请查阅、复制、更正、补充或删除个人信息，也可以撤回同意。撤回同意不影响撤回前已经进行的处理活动；由于姓名、手机号和图片是完成本次活动参与及抽奖联系所必需的信息，撤回后我们可能无法继续提供相应活动服务。</p>
+
             <h3>八、安全说明</h3>
+
             <p>表单数据和图片不向公众开放读取。普通用户仅可提交资料；只有经过身份验证并获得授权的指定管理员可以查看和导出。导出文件不通过公开链接长期提供，管理员的登录及相关管理操作将被记录。</p>
+
             <p>我们将采取与处理风险相适应的访问控制和安全措施。如发生可能对您的权益造成影响的个人信息安全事件，将依法采取补救和通知措施。</p>
+
           </div>
+
           <label class="privacy-modal-consent" for="privacyModalConsent">
+
             <input id="privacyModalConsent" type="checkbox" />
+
             <span>我已完整阅读、理解并同意上述个人信息处理规则。</span>
+
           </label>
+
           <div class="privacy-modal-actions">
+
             <button class="secondary-button" id="privacyModalCancel" type="button">不同意</button>
+
             <button class="primary-button" id="privacyModalConfirm" type="button" disabled>同意并继续</button>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
+
+
     <script src="config.js?v=20260810m"></script>
+
     <script src="app.js?v=20260810m"></script>
+
   </body>
+
 </html>
+
