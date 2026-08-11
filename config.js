@@ -20,6 +20,11 @@ window.H5_CONFIG = {
     "assets/gallery/009.jpg",
     "assets/gallery/010.jpg",
     "assets/gallery/011.jpg",
+    "assets/gallery/012.jpg",
+    "assets/gallery/013.jpg",
+    "assets/gallery/014.jpg",
+    "assets/gallery/015.jpg",
+    "assets/gallery/016.jpg",
   ],
   activity: {
     title: "6000年渭南一朵 Hua",
