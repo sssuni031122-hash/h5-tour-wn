@@ -280,6 +280,7 @@ button {
   box-shadow: 0 7px 18px rgba(146, 62, 32, 0.2), inset 0 0 0 2px rgba(255, 255, 255, 0.72);
   text-align: left;
   cursor: pointer;
+  will-change: transform;
   animation: p2-gallery-entry-breathe 1.45s ease-in-out infinite;
 }
 
@@ -291,8 +292,8 @@ button {
 .p2-gallery-entry:active { transform: scale(0.97); }
 
 @keyframes p2-gallery-entry-breathe {
-  0%, 100% { transform: scale(0.985); filter: brightness(1); }
-  50% { transform: scale(1.012); filter: brightness(1.06); }
+  0%, 100% { transform: translateZ(0) scale(0.985); }
+  50% { transform: translateZ(0) scale(1.012); }
 }
 
 .p2-gallery-modal { position: fixed; z-index: 150; inset: 0; display: grid; padding: 20px; place-items: center; visibility: hidden; opacity: 0; background: rgba(71, 29, 20, 0.76); transition: opacity 180ms ease, visibility 180ms ease; backdrop-filter: blur(8px); }
