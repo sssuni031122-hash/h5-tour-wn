@@ -17,20 +17,15 @@
   const maxFileSize = 10 * 1024 * 1024;
   let visitRefreshTimer = null;
 
-  /* ── 微信 Bridge 就绪检测 ── */
+  /* ── 微信 WeixinJSBridge 就绪检测 ── */
   var wechatBridgeReady = false;
   if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
     wechatBridgeReady = true;
   }
-  /* 监听事件（虽然通常已触发，但部分内嵌场景会二次派发） */
   if (typeof document !== "undefined") {
     document.addEventListener("WeixinJSBridgeReady", function () {
       wechatBridgeReady = true;
     });
-  }
-  /* jweixin SDK 加载完成后也会触发 */
-  if (typeof wx !== "undefined" && typeof wx.ready === "function") {
-    wx.ready(function () { wechatBridgeReady = true; });
   }
 
   function renderVisitCount(count) {
@@ -382,55 +377,47 @@
 
     var lat = Number(nav.latitude);
     var lng = Number(nav.longitude);
-    var name = nav.name || spot.name || "";
-    var addr = nav.address || "陕西省渭南市";
-    var scale = Number(nav.scale) || 14;
+    var locName = nav.name || spot.name || "";
+    var locAddr = nav.address || "陕西省渭南市";
 
-    /* 优先使用 wx.openLocation（参考 wnnew.sxtvs.com 成功方案） */
-    if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-      wx.openLocation({
+    function callOpenLocation() {
+      if (!window.WeixinJSBridge || typeof window.WeixinJSBridge.invoke !== "function") {
+        if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
+          wx.openLocation({ latitude: lat, longitude: lng, name: locName, address: locAddr, scale: 14, infoUrl: "" });
+        } else {
+          showToast("微信地图加载失败，请返回重试");
+        }
+        return;
+      }
+      WeixinJSBridge.invoke("openLocation", {
         latitude: lat,
         longitude: lng,
-        name: name,
-        address: addr,
-        scale: scale,
-        infoUrl: ""
+        name: locName,
+        address: locAddr,
+        scale: 14
+      }, function (res) {
+        var msg = res && res.err_msg ? res.err_msg : "";
+        if (msg.indexOf(":ok") === -1) {
+          if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
+            wx.openLocation({ latitude: lat, longitude: lng, name: locName, address: locAddr, scale: 14, infoUrl: "" });
+          } else {
+            showToast("未能打开微信地图，请稍后重试");
+          }
+        }
       });
-      return;
     }
 
-    /* 降级：WeixinJSBridge（旧版微信） */
-    if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
-      try {
-        window.WeixinJSBridge.invoke("openLocation", {
-          latitude: lat,
-          longitude: lng,
-          name: name,
-          address: addr,
-          scale: scale
-        }, function (res) {
-          var msg = res && res.err_msg ? res.err_msg : "";
-          if (msg.indexOf(":ok") === -1) showToast("未能打开微信地图，请稍后重试");
-        });
-        return;
-      } catch (e) { /* fall through */ }
+    if (window.WeixinJSBridge) {
+      callOpenLocation();
+    } else {
+      document.addEventListener("WeixinJSBridgeReady", callOpenLocation);
+      var attempts = 0;
+      var timer = setInterval(function () {
+        attempts++;
+        if (window.WeixinJSBridge) { clearInterval(timer); callOpenLocation(); }
+        else if (attempts >= 20) { clearInterval(timer); showToast("微信地图加载失败，请检查网络"); }
+      }, 100);
     }
-
-    /* 最终兜底：等待 wx SDK 加载 */
-    var attempts = 0;
-    var retry = setInterval(function () {
-      attempts++;
-      if (typeof wx !== "undefined" && typeof wx.openLocation === "function") {
-        clearInterval(retry);
-        wx.openLocation({ latitude: lat, longitude: lng, name: name, address: addr, scale: scale, infoUrl: "" });
-      } else if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
-        clearInterval(retry);
-        window.WeixinJSBridge.invoke("openLocation", { latitude: lat, longitude: lng, name: name, address: addr, scale: scale });
-      } else if (attempts >= 15) {
-        clearInterval(retry);
-        showToast("微信地图加载失败，请检查网络后重试");
-      }
-    }, 200);
   }
 
   function setFieldError(name, message) {
