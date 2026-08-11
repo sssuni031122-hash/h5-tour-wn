@@ -17,6 +17,15 @@
   const maxFileSize = 10 * 1024 * 1024;
   let visitRefreshTimer = null;
 
+  /* ── 微信 WeixinJSBridge 就绪检测 ── */
+  let wechatBridgeReady = false;
+  if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+    wechatBridgeReady = true;
+  }
+  document.addEventListener("WeixinJSBridgeReady", function onBridgeReady() {
+    wechatBridgeReady = true;
+  });
+
   function renderVisitCount(count) {
     const safeCount = Number(count);
     if (!Number.isSafeInteger(safeCount) || safeCount < 0) return;
@@ -347,22 +356,61 @@
       showToast("该景点坐标暂未配置");
       return;
     }
-    const openLocation = () => {
-      if (!window.WeixinJSBridge?.invoke) return showToast("微信地图加载失败，请稍后重试");
-      window.WeixinJSBridge.invoke("openLocation", {
-        latitude: navigation.latitude,
-        longitude: navigation.longitude,
-        name: navigation.name || spot.name,
-        address: navigation.address || "陕西省渭南市",
-        scale: navigation.scale || 16,
-        infoUrl: location.href,
-      }, (result) => {
-        if (!String(result?.err_msg || "").includes(":ok")) showToast("未能打开微信地图，请稍后重试");
-      });
-    };
     if (!/MicroMessenger/i.test(navigator.userAgent)) return showToast("请在微信内打开页面使用导航");
-    if (window.WeixinJSBridge?.invoke) openLocation();
-    else document.addEventListener("WeixinJSBridgeReady", openLocation, { once: true });
+
+    var nav = navigation;
+    function doOpenLocation() {
+      if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+        window.WeixinJSBridge.invoke("openLocation", {
+          latitude: nav.latitude,
+          longitude: nav.longitude,
+          name: nav.name || spot.name,
+          address: nav.address || "陕西省渭南市",
+          scale: nav.scale || 16,
+          infoUrl: window.location.href
+        }, function (res) {
+          var msg = res && res.err_msg ? res.err_msg : "";
+          if (msg.indexOf(":ok") === -1) showToast("未能打开微信地图，请稍后重试");
+        });
+        return;
+      }
+      if (window.wx && typeof window.wx.openLocation === "function") {
+        window.wx.openLocation({
+          latitude: nav.latitude,
+          longitude: nav.longitude,
+          name: nav.name || spot.name,
+          address: nav.address || "陕西省渭南市",
+          scale: nav.scale || 16,
+          infoUrl: window.location.href
+        });
+        return;
+      }
+      showToast("微信地图加载失败，请返回重试");
+    }
+
+    if (wechatBridgeReady) return doOpenLocation();
+
+    var waited = 0;
+    var MAX_WAIT = 3000;
+    var INTERVAL = 80;
+    var pollTimer = setInterval(function () {
+      waited += INTERVAL;
+      if (wechatBridgeReady || (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function")) {
+        wechatBridgeReady = true;
+        clearInterval(pollTimer);
+        doOpenLocation();
+      } else if (waited >= MAX_WAIT) {
+        clearInterval(pollTimer);
+        if (window.WeixinJSBridge && typeof window.WeixinJSBridge.invoke === "function") {
+          wechatBridgeReady = true;
+          doOpenLocation();
+        } else if (window.wx && typeof window.wx.openLocation === "function") {
+          doOpenLocation();
+        } else {
+          showToast("微信地图加载失败，请检查网络后重试");
+        }
+      }
+    }, INTERVAL);
   }
 
   function setFieldError(name, message) {
