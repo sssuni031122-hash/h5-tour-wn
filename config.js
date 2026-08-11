@@ -6,7 +6,9 @@ window.H5_CONFIG = {
   uploadTokenPath: "/api/upload-token",
   submitPath: "/api/submit",
   visitPath: "/api/visit",
-  visitRefreshInterval: 3 * 60 * 1000,
+  visitRefreshInterval: 12 * 1000,
+  // 示例照片可持续追加，前端不设数量上限。例如：["assets/gallery/001.webp", "assets/gallery/002.webp"]
+  galleryPhotos: [],
   activity: {
     title: "6000年渭南一朵 Hua",
     subtitle: "循着一朵花，读懂渭南与华夏文明",
@@ -39,6 +41,7 @@ window.H5_CONFIG = {
       route: "山河东线",
       asset: "assets/details/01-huashan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/01-huashan.webp?v=20260807i",
+      navigation: { name: "华山风景名胜区", longitude: 110.070978, latitude: 34.493336 },
     },
     {
       id: "cangjiemiao",
@@ -52,6 +55,7 @@ window.H5_CONFIG = {
       route: "文明非遗线",
       asset: "assets/details/02-cangjiemiao.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/02-cangjiemiao.webp?v=20260807i",
+      navigation: { name: "仓颉庙", longitude: 109.651119, latitude: 35.103987 },
     },
     {
       id: "qiachuan",
@@ -65,6 +69,7 @@ window.H5_CONFIG = {
       route: "黄河人文线",
       asset: "assets/details/03-qiachuan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/03-qiachuan.webp?v=20260807i",
+      navigation: { name: "洽川风景名胜区", longitude: 110.245912, latitude: 35.184502 },
     },
     {
       id: "hancheng",
@@ -78,6 +83,7 @@ window.H5_CONFIG = {
       route: "黄河人文线",
       asset: "assets/details/04-hancheng.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/04-hancheng.webp?v=20260807i",
+      navigation: { name: "司马迁祠景区", longitude: 110.413465, latitude: 35.374889 },
     },
     {
       id: "tongguan",
@@ -91,6 +97,7 @@ window.H5_CONFIG = {
       route: "山河东线",
       asset: "assets/details/05-tongguan.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/05-tongguan.webp?v=20260807i",
+      navigation: { name: "潼关古城", longitude: 110.292811, latitude: 34.605159 },
     },
     {
       id: "fengtuyicang",
@@ -104,6 +111,7 @@ window.H5_CONFIG = {
       route: "黄河人文线",
       asset: "assets/details/06-fengtuyicang.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/06-fengtuyicang.webp?v=20260807i",
+      navigation: { name: "丰图义仓", longitude: 110.092797, latitude: 34.796918 },
     },
     {
       id: "yaotouyao",
@@ -117,6 +125,7 @@ window.H5_CONFIG = {
       route: "文明非遗线",
       asset: "assets/details/07-yaotouyao.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/07-yaotouyao.webp?v=20260807i",
+      navigation: { name: "尧头窑文化旅游生态园区", longitude: 109.932348, latitude: 35.184092 },
     },
     {
       id: "laojie",
@@ -130,6 +139,7 @@ window.H5_CONFIG = {
       route: "山河东线",
       asset: "assets/details/08-laojie.webp?v=20260810c",
       buttonAsset: "assets/buttons/spots/08-laojie.webp?v=20260807i",
+      navigation: { name: "渭南老街", longitude: 109.480971, latitude: 34.483444 },
     },
   ],
 };

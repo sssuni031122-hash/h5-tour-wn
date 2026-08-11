@@ -128,10 +128,12 @@
   function renderOverview() {
     const overviewOrder = ["huashan", "cangjiemiao", "qiachuan", "hancheng", "fengtuyicang", "tongguan", "yaotouyao", "laojie"];
     const overviewSpots = overviewOrder.map((id) => config.spots.find((spot) => spot.id === id));
+    const galleryItems = getGalleryItems();
     screen.innerHTML = `
       <section class="screen" data-screen="overview">
         <div class="p2-design">
-          <img class="p2-design-background" src="${escapeHtml(config.assets.overview)}" alt="游渭南" width="750" height="2150" decoding="async" fetchpriority="high" />
+          <img class="p2-design-background p2-design-background-top" src="${escapeHtml(config.assets.overview)}" alt="游渭南" width="750" height="2150" decoding="async" fetchpriority="high" />
+          <img class="p2-design-background p2-design-background-bottom" src="${escapeHtml(config.assets.overview)}" alt="" width="750" height="2150" decoding="async" fetchpriority="high" aria-hidden="true" />
           <div class="p2-clouds" aria-hidden="true">
             <span class="p2-cloud p2-cloud-1"></span>
             <span class="p2-cloud p2-cloud-2"></span>
@@ -140,16 +142,79 @@
             <span class="p2-cloud p2-cloud-5"></span>
             <span class="p2-cloud p2-cloud-6"></span>
           </div>
+          <button class="p2-gallery-entry" type="button" data-action="open-gallery" aria-label="来看看大家是怎么打卡拍照的">
+            <span class="p2-gallery-entry-icon" aria-hidden="true">📷</span>
+            <span><strong>来看看大家怎么打卡拍照</strong><small>点击查看照片</small></span>
+            <span class="p2-gallery-entry-arrow" aria-hidden="true">›</span>
+          </button>
           <div class="p2-spot-buttons">
             ${overviewSpots.map((spot, index) => `
               <button class="p2-spot-button p2-spot-button-${index + 1}" type="button" data-spot="${escapeHtml(spot.id)}" aria-label="${escapeHtml(spot.name)}">
                 <img src="${escapeHtml(spot.buttonAsset)}" alt="" />
               </button>`).join("")}
           </div>
+          <div class="p2-gallery-modal" id="p2GalleryModal" aria-hidden="true">
+            <div class="p2-gallery-dialog" role="dialog" aria-modal="true" aria-labelledby="p2GalleryTitle">
+              <button class="p2-gallery-close" type="button" data-action="close-gallery" aria-label="关闭照片页面">×</button>
+              <h2 id="p2GalleryTitle">来看看大家怎么拍</h2>
+              <div class="p2-gallery-list">
+                ${galleryItems.map((item, index) => `<button class="p2-gallery-photo${item.src ? "" : " p2-gallery-photo-placeholder"}" type="button" data-gallery-photo="${index}" aria-label="放大查看示例照片 ${index + 1}">${item.src ? `<img src="${escapeHtml(item.src)}" alt="示例照片 ${index + 1}" loading="lazy" decoding="async" />` : `<span>示例照片 ${index + 1}</span>`}</button>`).join("")}
+              </div>
+            </div>
+            <div class="p2-photo-lightbox" id="p2PhotoLightbox" aria-hidden="true">
+              <button class="p2-photo-lightbox-close" type="button" data-action="close-photo" aria-label="关闭大图">×</button>
+              <div class="p2-photo-lightbox-image" id="p2PhotoLightboxImage" role="img"></div>
+            </div>
+          </div>
         </div>
       </section>`;
     // 用户停留在总览页时就在后台缓存8个详情页，避免点击后才开始下载。
     preloadDetailAssets();
+  }
+
+  function getGalleryItems() {
+    const photos = Array.isArray(config.galleryPhotos) ? config.galleryPhotos.filter(Boolean) : [];
+    if (photos.length) return photos.map((src) => ({ src }));
+    return Array.from({ length: 30 }, () => ({ src: "" }));
+  }
+
+  function openGallery() {
+    const modal = document.getElementById("p2GalleryModal");
+    if (!modal) return;
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    modal.querySelector(".p2-gallery-close")?.focus();
+  }
+
+  function closeGallery() {
+    const modal = document.getElementById("p2GalleryModal");
+    if (!modal) return;
+    closeGalleryPhoto();
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+  }
+
+  function openGalleryPhoto(indexValue) {
+    const lightbox = document.getElementById("p2PhotoLightbox");
+    const image = document.getElementById("p2PhotoLightboxImage");
+    if (!lightbox || !image) return;
+    const index = Number(indexValue);
+    const item = getGalleryItems()[index];
+    const number = index + 1;
+    image.setAttribute("aria-label", `示例照片 ${number}`);
+    image.innerHTML = item?.src ? `<img src="${escapeHtml(item.src)}" alt="示例照片 ${number}" />` : `<span>示例照片 ${number}</span>`;
+    lightbox.classList.add("show");
+    lightbox.setAttribute("aria-hidden", "false");
+    lightbox.querySelector(".p2-photo-lightbox-close")?.focus();
+  }
+
+  function closeGalleryPhoto() {
+    const lightbox = document.getElementById("p2PhotoLightbox");
+    if (!lightbox) return;
+    lightbox.classList.remove("show");
+    lightbox.setAttribute("aria-hidden", "true");
   }
 
   function renderDetail() {
@@ -160,6 +225,9 @@
           <img class="spot-detail-background" src="${escapeHtml(spot.asset)}" alt="${escapeHtml(spot.name)}" width="750" height="1890" decoding="async" fetchpriority="high" />
           <button class="spot-detail-back" type="button" data-action="go-back" aria-label="返回上一页">
             <img src="${escapeHtml(config.assets.detailBackButton)}" alt="返回" />
+          </button>
+          <button class="spot-detail-navigation" type="button" data-action="open-location" aria-label="在微信地图中查看${escapeHtml(spot.name)}">
+            <span class="spot-detail-navigation-icon" aria-hidden="true">➤</span><span>导航</span>
           </button>
           <button class="spot-detail-checkin" type="button" data-action="join-from-spot" aria-label="我来啦！我要打卡！">
             <img src="${escapeHtml(config.assets.detailCheckinButton)}" alt="我来啦！我要打卡！" />
@@ -254,6 +322,39 @@
       return;
     }
     location.hash = nextHash;
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    window.clearTimeout(showToast.timer);
+    showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+
+  function invokeWechatLocation(spot) {
+    const navigation = spot?.navigation;
+    if (!navigation || !Number.isFinite(navigation.longitude) || !Number.isFinite(navigation.latitude)) {
+      showToast("该景点坐标暂未配置");
+      return;
+    }
+    const openLocation = () => {
+      if (!window.WeixinJSBridge?.invoke) return showToast("微信地图加载失败，请稍后重试");
+      window.WeixinJSBridge.invoke("openLocation", {
+        latitude: navigation.latitude,
+        longitude: navigation.longitude,
+        name: navigation.name || spot.name,
+        address: navigation.address || "陕西省渭南市",
+        scale: navigation.scale || 16,
+        infoUrl: location.href,
+      }, (result) => {
+        if (!String(result?.err_msg || "").includes(":ok")) showToast("未能打开微信地图，请稍后重试");
+      });
+    };
+    if (!/MicroMessenger/i.test(navigator.userAgent)) return showToast("请在微信内打开页面使用导航");
+    if (window.WeixinJSBridge?.invoke) openLocation();
+    else document.addEventListener("WeixinJSBridgeReady", openLocation, { once: true });
   }
 
   function setFieldError(name, message) {
@@ -422,8 +523,13 @@
     const target = event.target.closest("button");
     if (!target) return;
     if (target.dataset.nav) return navigate(target.dataset.nav);
+    if (target.dataset.action === "open-gallery") return openGallery();
+    if (target.dataset.action === "close-gallery") return closeGallery();
+    if (target.dataset.action === "close-photo") return closeGalleryPhoto();
+    if (target.dataset.galleryPhoto) return openGalleryPhoto(target.dataset.galleryPhoto);
     if (target.dataset.spot) return navigate("detail", target.dataset.spot);
     if (target.dataset.action === "go-back") return history.back();
+    if (target.dataset.action === "open-location") return invokeWechatLocation(config.spots.find((item) => item.id === state.spotId));
     if (target.dataset.action === "join-from-spot") return navigate("entry");
     if (target.dataset.entryType) { state.entryType = target.dataset.entryType; state.selectedFile = null; return navigate("form"); }
   });
@@ -454,7 +560,9 @@
     if (event.target === privacyModal) closePrivacyModal();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && privacyModal.classList.contains("show")) closePrivacyModal();
+    if (event.key === "Escape" && document.getElementById("p2PhotoLightbox")?.classList.contains("show")) closeGalleryPhoto();
+    else if (event.key === "Escape" && document.getElementById("p2GalleryModal")?.classList.contains("show")) closeGallery();
+    else if (event.key === "Escape" && privacyModal.classList.contains("show")) closePrivacyModal();
   });
 
   window.addEventListener("hashchange", () => { routeFromHash(); window.scrollTo(0, 0); render(); });
