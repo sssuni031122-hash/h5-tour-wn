@@ -100,6 +100,10 @@
       image.decoding = "async";
       image.fetchPriority = priority;
       image.src = src;
+      /* 提前解码，进入详情页时无需等待解码卡顿 */
+      if (typeof image.decode === "function") {
+        image.decode().catch(() => {});
+      }
       state.preloadedImages.push(image);
     });
   }
@@ -110,17 +114,16 @@
 
   function preloadDetailAssets() {
     /* 分批预载详情页大图：避免一次性拉 8 张图导致卡顿。
-       仅在浏览器空闲时逐张预载，且最多预载 4 张（用户最可能先点的）。 */
+       仅在浏览器空闲时逐张预载（低优先级），8 张全部预载但间隔拉长。 */
     const sources = [
       ...config.spots.map((spot) => spot.asset),
       config.assets.detailBackButton,
       config.assets.detailCheckinButton,
     ].filter(Boolean);
-    const batch = sources.slice(0, 4);
-    batch.forEach((src, i) => {
+    sources.forEach((src, i) => {
       const run = () => preloadImages([src], "low");
-      if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 2500 + i * 800 });
-      else window.setTimeout(run, 1500 + i * 600);
+      if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 2500 + i * 600 });
+      else window.setTimeout(run, 1500 + i * 500);
     });
   }
 
@@ -249,7 +252,7 @@
     screen.innerHTML = `
       <section class="screen spot-detail-screen" data-screen="detail" data-spot-id="${escapeHtml(spot.id)}">
         <div class="spot-detail-design">
-          <img class="spot-detail-background" src="${escapeHtml(spot.asset)}" alt="${escapeHtml(spot.name)}" width="750" height="1890" decoding="async" fetchpriority="high" />
+          <img class="spot-detail-background" src="${escapeHtml(spot.asset)}" alt="${escapeHtml(spot.name)}" width="640" height="1612" decoding="async" fetchpriority="auto" />
           <button class="spot-detail-back" type="button" data-action="go-back" aria-label="返回上一页">
             <img src="${escapeHtml(config.assets.detailBackButton)}" alt="返回" />
           </button>
