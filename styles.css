@@ -1733,6 +1733,20 @@ noscript {
   overflow: hidden;
 }
 
+/* 抽大奖页：画布自适应视口高度（背景 cover 填满），避免微信内被裁剪显示不全 */
+.design-canvas.prize-canvas {
+  aspect-ratio: auto;
+  height: 100dvh;
+  min-height: 560px;
+  max-height: 1000px;
+}
+
+@supports not (height: 100dvh) {
+  .design-canvas.prize-canvas {
+    height: 100vh;
+  }
+}
+
 .design-background {
   position: absolute;
   inset: 0;
