@@ -109,11 +109,19 @@
   }
 
   function preloadDetailAssets() {
-    preloadImages([
+    /* 分批预载详情页大图：避免一次性拉 8 张图导致卡顿。
+       仅在浏览器空闲时逐张预载，且最多预载 4 张（用户最可能先点的）。 */
+    const sources = [
       ...config.spots.map((spot) => spot.asset),
       config.assets.detailBackButton,
       config.assets.detailCheckinButton,
-    ].filter(Boolean), "low");
+    ].filter(Boolean);
+    const batch = sources.slice(0, 4);
+    batch.forEach((src, i) => {
+      const run = () => preloadImages([src], "low");
+      if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 2500 + i * 800 });
+      else window.setTimeout(run, 1500 + i * 600);
+    });
   }
 
   function scheduleDetailPreload() {
@@ -149,7 +157,7 @@
       <section class="screen" data-screen="overview">
         <div class="p2-design">
           <img class="p2-design-background p2-design-background-top" src="${escapeHtml(config.assets.overview)}" alt="游渭南" width="750" height="2150" decoding="async" fetchpriority="high" />
-          <img class="p2-design-background p2-design-background-bottom" src="${escapeHtml(config.assets.overview)}" alt="" width="750" height="2150" decoding="async" fetchpriority="high" aria-hidden="true" />
+          <img class="p2-design-background p2-design-background-bottom" src="${escapeHtml(config.assets.overview)}" alt="" width="750" height="2150" decoding="async" loading="lazy" aria-hidden="true" />
           <div class="p2-clouds" aria-hidden="true">
             <span class="p2-cloud p2-cloud-1"></span>
             <span class="p2-cloud p2-cloud-2"></span>
