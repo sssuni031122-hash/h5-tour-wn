@@ -1611,6 +1611,8 @@ noscript {
   display: block;
   width: 100%;
   height: auto;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1612px;
 }
 
 .spot-detail-back,
@@ -1664,7 +1666,7 @@ noscript {
   left: 22.69%;
   width: 54.63%;
   height: 6.25%;
-  animation: spot-checkin-breathe 1.08s ease-in-out infinite;
+  animation: spot-checkin-breathe 2.2s ease-in-out infinite;
 }
 
 .spot-detail-back img,
@@ -1683,7 +1685,7 @@ noscript {
   border-radius: 999px;
   content: "";
   pointer-events: none;
-  animation: spot-checkin-ring 1.08s ease-out infinite;
+  animation: spot-checkin-ring 2.2s ease-out infinite;
 }
 
 .spot-detail-back:active,
@@ -1704,11 +1706,9 @@ noscript {
 @keyframes spot-checkin-breathe {
   0%, 100% {
     transform: translateZ(0) scale(0.97);
-    box-shadow: 0 3px 4px rgba(174, 61, 25, 0.24);
   }
   50% {
     transform: translateZ(0) scale(1.045);
-    box-shadow: 0 8px 12px rgba(174, 61, 25, 0.42);
   }
 }
 
